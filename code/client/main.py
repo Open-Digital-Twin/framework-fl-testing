@@ -14,9 +14,9 @@ import os
 import flwr as fl
 
 DATA_PATH = "./data/cifar-10"
-#DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-DEVICE: str = "cpu"
-CERTIFICATES_PATH = "./certificates"
+DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+#DEVICE: str = "cpu"
+CERTIFICATES_PATH = "./.cache/certificates"
 
   
 # Function to Check if the path specified

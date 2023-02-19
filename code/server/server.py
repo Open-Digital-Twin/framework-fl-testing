@@ -3,7 +3,7 @@ from typing import List,Tuple
 from pathlib import Path
 
 SERVER_NUM_ROUNDS = 10
-CERTIFICATES_PATH = "./certificates"
+CERTIFICATES_PATH = "./.cache/certificates"
 
 
 
