@@ -1,73 +1,50 @@
 from collections import OrderedDict
-from typing import Tuple, Dict
+from typing import Dict
 
+
+from numpy import array
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-from torchvision.datasets import CIFAR10
+from src.client.cnn import Net
 
 import flwr as fl
 
-DATA_PATH = "./data/cifar-10"
 
-DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+class Client(fl.client.NumPyClient):
+    __trainloader: DataLoader
+    __testloader: DataLoader
+    __net: Net
+    __num_examples: Dict[str, int]
+    __device: torch.device
 
-class Net(nn.Module):
-    def __init__(self) -> None:
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-
-class Client():
-
-    def load_data(data_path = DATA_PATH) -> Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]:
+    def __init__(self, trainloader: DataLoader, testloader: DataLoader, net: Net, num_examples: Dict[str, int]):
         """Load CIFAR-10 (training and test set)."""
-        transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-        )
-        trainset = CIFAR10(data_path, train=True, download=True, transform=transform)
-        testset = CIFAR10(data_path, train=False, download=True, transform=transform)
-        trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
-        testloader = DataLoader(testset, batch_size=32)
-        num_examples = {"trainset" : len(trainset), "testset" : len(testset)}
-        return trainloader, testloader, num_examples
-
-    def train(net, trainloader, epochs):
+        self.__trainloader = trainloader
+        self.__testloader = testloader
+        self.__net = net
+        self.__num_examples = num_examples
+    
+   
+    def __train(self, epochs: int):
         """Train the network on the training set."""
         criterion = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+        optimizer = torch.optim.SGD(self.__net.parameters(), lr=0.001, momentum=0.9)
         for _ in range(epochs):
-            for images, labels in trainloader:
-                images, labels = images.to(DEVICE), labels.to(DEVICE)
+            for images, labels in self.__trainloader:
+                images, labels = images.to(self.__device), labels.to(self.__device)
                 optimizer.zero_grad()
-                loss = criterion(net(images), labels)
+                loss = criterion(self.__net(images), labels)
                 loss.backward()
                 optimizer.step()
 
-    def test(net, testloader):
+    def __test(self):
         """Validate the network on the entire test set."""
         criterion = torch.nn.CrossEntropyLoss()
         correct, total, loss = 0, 0, 0.0
         with torch.no_grad():
-            for data in testloader:
-                images, labels = data[0].to(DEVICE), data[1].to(DEVICE)
-                outputs = net(images)
+            for data in self.__testloader:
+                images, labels = data[0].to(self.__device), data[1].to(self.__device)
+                outputs = self.__net(images)
                 loss += criterion(outputs, labels).item()
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
@@ -75,28 +52,20 @@ class Client():
         accuracy = correct / total
         return loss, accuracy
 
-
-# Load model and data
-net = Net().to(DEVICE)
-trainloader, testloader, num_examples = load_data()
-
-class CifarClient(fl.client.NumPyClient):
     def get_parameters(self, config):
-        return [val.cpu().numpy() for _, val in net.state_dict().items()]
+        return [val.cpu().numpy() for _, val in self.__net.state_dict().items()]
 
     def set_parameters(self, parameters):
-        params_dict = zip(net.state_dict().keys(), parameters)
+        params_dict = zip(self.__net.state_dict().keys(), parameters)
         state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-        net.load_state_dict(state_dict, strict=True)
+        self.__net.load_state_dict(state_dict, strict=True)
 
     def fit(self, parameters, config):
         self.set_parameters(parameters)
-        train(net, trainloader, epochs=1)
-        return self.get_parameters(config={}), num_examples["trainset"], {}
+        self.__train(epochs=1)
+        return self.get_parameters(config={}), self.__num_examples["trainset"], {}
 
     def evaluate(self, parameters, config):
         self.set_parameters(parameters)
-        loss, accuracy = test(net, testloader)
-        return float(loss), num_examples["testset"], {"accuracy": float(accuracy)}
-
-fl.client.start_numpy_client(server_address="[::]:8080", client=CifarClient())
+        loss, accuracy = self.__test()
+        return float(loss), self.__num_examples["testset"], {"accuracy": float(accuracy)}
