@@ -1,7 +1,5 @@
 from client import Client
-from cnn import Net
 
-import torch
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10
 import torchvision.transforms as transforms
@@ -14,7 +12,7 @@ import os
 import flwr as fl
 
 DATA_PATH = "./data/cifar-10"
-DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 #DEVICE: str = "cpu"
 CERTIFICATES_PATH = "./.cache/certificates"
 
@@ -38,7 +36,6 @@ def main() -> None:
     """Load data, start CifarClient."""
 
     # Load model and data
-    net = Net().to(DEVICE)
     transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
         )
@@ -47,7 +44,7 @@ def main() -> None:
     trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
     testloader = DataLoader(testset, batch_size=32)
     num_examples = {"trainset" : len(trainset), "testset" : len(testset)}
-    client = Client(trainloader, testloader, net, num_examples, DEVICE, 10)
+    client = Client(trainloader, testloader, num_examples)
 
 
 

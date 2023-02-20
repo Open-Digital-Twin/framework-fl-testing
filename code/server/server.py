@@ -7,6 +7,15 @@ CERTIFICATES_PATH = "./.cache/certificates"
 
 
 
+def fit_config(server_round: int):
+    """Return training configuration dict for each round."""
+    config = {
+        "batch_size": 32,
+        "current_round": server_round,
+        "local_epochs": 3,
+    }
+    return config
+
 class AggregateCustomMetricStrategy(fl.server.strategy.FedAvg):
     def aggregate_evaluate(
         self,
@@ -28,6 +37,8 @@ class AggregateCustomMetricStrategy(fl.server.strategy.FedAvg):
 
         # Call aggregate_evaluate from base class (FedAvg)
         return super().aggregate_evaluate(rnd, results, failures)
+    
+ 
 
 def main() -> None:
     # Pass parameters to the Strategy for server-side parameter initialization
@@ -35,7 +46,8 @@ def main() -> None:
     strategy = AggregateCustomMetricStrategy(
         fraction_fit=0.5,  # Sample % of available clients for the next round (0.1 = 10%)
         min_fit_clients=2,  # Minimum number of clients to be sampled for the next round
-        min_available_clients=2,  # Minimum number of clients that need to be connected to the server before a training round can start
+        min_available_clients=4,  # Minimum number of clients that need to be connected to the server before a training round can start
+        on_fit_config_fn=fit_config # The fit_config function we defined earlier
     )
 
   
