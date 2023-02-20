@@ -2,7 +2,7 @@ VERSION=latest
 SCRIPTS_DIR=./scripts
 DOCKER_DIR=./docker
 CODE_DIR=./code
-CERTIFICATES_DIR=./certificates
+CERTIFICATES_DIR=./.cache/certificates
 
 .PHONY: install-poetry
 install-poetry:
@@ -19,11 +19,11 @@ docker-build-server: ./docker/server/Dockerfile
 
 .PHONY: local-run-client
 local-run-client: 
-	poetry shell python3.10 ${CODE_DIR}/client/main.py
+	python3.10 ${CODE_DIR}/client/main.py
 
 .PHONY: local-run-server
 local-run-server: 
-	poetry shell python3.10  ${CODE_DIR}/client/server.py
+	python3.10  ${CODE_DIR}/server/server.py
 
 
 certificates: ${CERTIFICATES_DIR}/ca.crt ${CERTIFICATES_DIR}/ca.key ${CERTIFICATES_DIR}/server.csr ${CERTIFICATES_DIR}/server.key ${CERTIFICATES_DIR}/server.pem
