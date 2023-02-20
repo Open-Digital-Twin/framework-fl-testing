@@ -6,14 +6,14 @@ import numpy as np
 from torch.utils.data import DataLoader
 import torch
 
-import model
+from ..models import cifar as model
 
 import flwr as fl
 
 #DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 DEVICE: str = torch.device("cpu")
 
-class Client(fl.client.NumPyClient):
+class CifarClient(fl.client.NumPyClient):
     __trainloader: DataLoader
     __testloader: DataLoader
     __net: model.Net

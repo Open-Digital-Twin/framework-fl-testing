@@ -1,4 +1,4 @@
-from client import Client
+from .clients import CifarClient
 
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10
@@ -12,7 +12,7 @@ import os
 import flwr as fl
 
 DATA_PATH = "./data/cifar-10"
-
+SERVER_ADDRESS = "127.0.0.1:4466"
 #DEVICE: str = "cpu"
 CERTIFICATES_PATH = "./.cache/certificates"
 
@@ -44,12 +44,12 @@ def main() -> None:
     trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
     testloader = DataLoader(testset, batch_size=32)
     num_examples = {"trainset" : len(trainset), "testset" : len(testset)}
-    client = Client(trainloader, testloader, num_examples)
+    client = CifarClient(trainloader, testloader, num_examples)
 
 
 
     fl.client.start_numpy_client(
-        server_address="127.0.0.1:4466",
+        server_address=SERVER_ADDRESS,
         root_certificates=Path(f"{CERTIFICATES_PATH}/ca.crt").read_bytes(),
         client=client
         )
