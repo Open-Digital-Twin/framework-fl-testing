@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 from pathlib import Path
 
 import os
-
+from os import environ
 
 
 import flwr as fl
