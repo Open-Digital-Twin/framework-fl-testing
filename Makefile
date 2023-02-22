@@ -16,15 +16,15 @@ install-poetry:
 	poetry config virtualenvs.in-project true
 
 .PHONY: install-dependencies-server
-install-poetry:
+install-dependencies-server:
 	poetry install -C $(SERVER_DIR)
 
 .PHONY: install-dependencies-client
-install-poetry:
+install-dependencies-client:
 	poetry install -C $(CLIENT_DIR)
 
 .PHONY: install-dependencies
-install-poetry: install-dependencies-server install-dependencies-client
+install-dependencies: install-dependencies-server install-dependencies-client
 	
 
 

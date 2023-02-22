@@ -9,7 +9,7 @@ CERTIFICATES_PATH = environ.get("CERTIFICATES_PATH")
 SERVER_ADDRESS=environ.get("SERVER_ADDRESS")
 FRACTION_FIT=float(environ.get("FRACTION_FIT"))
 MIN_FIT_CLIENTS=int(environ.get("MIN_FIT_CLIENTS"))
-MIN_AVAIABLE_CLIENTS=int(environ.get("MIN_AVAIABLE_CLIENTS"))
+MIN_AVAILABLE_CLIENTS=int(environ.get("MIN_AVAILABLE_CLIENTS"))
 
 def fit_config(server_round: int):
     """Return training configuration dict for each round."""
@@ -28,7 +28,7 @@ def main() -> None:
     strategy = strategies.AggregateCustomMetricStrategy(
         fraction_fit=FRACTION_FIT,  # Sample % of available clients for the next round (0.1 = 10%)
         min_fit_clients=MIN_FIT_CLIENTS,  # Minimum number of clients to be sampled for the next round
-        min_available_clients=MIN_AVAIABLE_CLIENTS,  # Minimum number of clients that need to be connected to the server before a training round can start
+        min_available_clients=MIN_AVAILABLE_CLIENTS,  # Minimum number of clients that need to be connected to the server before a training round can start
         on_fit_config_fn=fit_config # The fit_config function we defined earlier
     )
 
