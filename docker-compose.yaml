@@ -5,15 +5,14 @@ services:
   server:
     image: 'fschwanck/fl-framework-server:latest'
     environment:
-      - SERVER_ADDRESS=10.5.0.2:8080
+      - SERVER_ADDRESS=0.0.0.0:8080
       - FRACTION_FIT=1
       - MIN_FIT_CLIENTS=3
       - MIN_AVAILABLE_CLIENTS=3
       - SERVER_NUM_ROUNDS=1
       - CERTIFICATES_PATH=./.cache/certificates
     networks:
-      mynet:
-        ipv4_address: 10.5.0.2
+      - mynet
       
     restart: always
     deploy:
@@ -56,6 +55,7 @@ services:
       
     networks:
       - mynet
+
     restart: always
     deploy:
       replicas: 1

@@ -11,10 +11,10 @@ CERT_DIR=./.cache/certificates
 # Generate directories if not exists
 mkdir -p $CERT_DIR
 
-# if [ -f ".cache/certificates/ca.crt" ]; then
-#     echo "Skipping certificate generation as they already exist."
-#     exit 0
-# fi
+if [ -f ".cache/certificates/ca.crt" ]; then
+     echo "Skipping certificate generation as they already exist."
+     exit 0
+fi
 
 rm -f $CERT_DIR/*
 
