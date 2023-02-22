@@ -1,18 +1,20 @@
-version: '3'
+version: '2'
 
 services:
 
   server:
     image: 'fschwanck/fl-framework-server:latest'
     environment:
-      - SERVER_ADDRESS=0.0.0.0:8080
+      - SERVER_ADDRESS=10.5.0.2:8080
       - FRACTION_FIT=1
       - MIN_FIT_CLIENTS=3
-      - MIN_AVAILABLE_CLIENTS=2
-      - SERVER_NUM_ROUNDS=1=10
+      - MIN_AVAILABLE_CLIENTS=3
+      - SERVER_NUM_ROUNDS=1
       - CERTIFICATES_PATH=./.cache/certificates
     networks:
-      - default
+      mynet:
+        ipv4_address: 10.5.0.2
+      
     restart: always
     deploy:
       replicas: 1
@@ -21,16 +23,19 @@ services:
           - node.labels.type==manager
 
 
+
+
+
   client0:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
-      - SERVER_ADDRESS=0.0.0.0:8080
+      - SERVER_ADDRESS=server:8080
       - FL_CLIENT_DEVICE=cpu
       - CERTIFICATES_PATH=./.cache/certificates
       - DATA_PATH=./data/cifar-10
       
     networks:
-      - default
+      - mynet
     restart: always
     deploy:
       replicas: 1
@@ -44,13 +49,13 @@ services:
   client1:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
-      - SERVER_ADDRESS=0.0.0.0:8080
+      - SERVER_ADDRESS=server:8080
       - FL_CLIENT_DEVICE=cpu
       - CERTIFICATES_PATH=./.cache/certificates
       - DATA_PATH=./data/cifar-10
       
     networks:
-      - default
+      - mynet
     restart: always
     deploy:
       replicas: 1
@@ -63,14 +68,14 @@ services:
   client2:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
-      - SERVER_ADDRESS=0.0.0.0:8080
+      - SERVER_ADDRESS=server:8080
       - FL_CLIENT_DEVICE=cpu
       - CERTIFICATES_PATH=./.cache/certificates
       - DATA_PATH=./data/cifar-10
 
       
     networks:
-      - default
+      - mynet
     restart: always
     deploy:
       replicas: 1
@@ -79,4 +84,15 @@ services:
           - node.labels.type==worker
     volumes:
     - ./data:/data
-    
+ 
+networks:
+  mynet:
+    driver: overlay
+    attachable: true
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          aux_addresses:
+            server: 10.5.0.2
+         
+            
