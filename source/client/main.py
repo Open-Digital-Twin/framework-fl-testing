@@ -4,32 +4,21 @@ from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10
 import torchvision.transforms as transforms
 from pathlib import Path
+from . import utils
 
 import os
-from os import environ
+
 
 
 import flwr as fl
 
-DATA_PATH = "./data/cifar-10"
-SERVER_ADDRESS = "127.0.0.1:4466"
-#DEVICE: str = "cpu"
-CERTIFICATES_PATH = "./.cache/certificates"
+
+DATA_PATH = os.environ.get("DATA_PATH")
+SERVER_ADDRESS = os.environ.get("SERVER_ADDRESS")
+CERTIFICATES_PATH = os.environ.get("CERTIFICATES_PATH")
 
   
-# Function to Check if the path specified
-# specified is a valid directory
-def isEmpty(path):
-    if os.path.exists(path) and not os.path.isfile(path):
-  
-        # Checking if the directory is empty or not
-        if not os.listdir(path):
-            return True
-        else:
-            return False
-    else:
-        return True
-  
+
   
 
 def main() -> None:
@@ -39,8 +28,8 @@ def main() -> None:
     transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
         )
-    trainset = CIFAR10(DATA_PATH, train=True, download=isEmpty(DATA_PATH), transform=transform)
-    testset = CIFAR10(DATA_PATH, train=False, download=isEmpty(DATA_PATH), transform=transform)
+    trainset = CIFAR10(DATA_PATH, train=True, download=utils.isEmpty(DATA_PATH), transform=transform)
+    testset = CIFAR10(DATA_PATH, train=False, download=utils.isEmpty(DATA_PATH), transform=transform)
     trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
     testloader = DataLoader(testset, batch_size=32)
     num_examples = {"trainset" : len(trainset), "testset" : len(testset)}

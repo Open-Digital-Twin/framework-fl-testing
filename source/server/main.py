@@ -1,14 +1,15 @@
 import flwr as fl
 from pathlib import Path
+from os import environ
 
 from . import strategies
 
-SERVER_NUM_ROUNDS = 10
-CERTIFICATES_PATH = "./.cache/certificates"
-SERVER_ADDRESS="127.0.0.1:4466"
-FRACTION_FIT=0.5
-MIN_FIT_CLIENTS=2
-MIN_AVAIABLE_CLIENTS=4
+SERVER_NUM_ROUNDS = int(environ.get("SERVER_NUM_ROUNDS"))
+CERTIFICATES_PATH = environ.get("CERTIFICATES_PATH")
+SERVER_ADDRESS=environ.get("SERVER_ADDRESS")
+FRACTION_FIT=float(environ.get("FRACTION_FIT"))
+MIN_FIT_CLIENTS=int(environ.get("MIN_FIT_CLIENTS"))
+MIN_AVAIABLE_CLIENTS=int(environ.get("MIN_AVAIABLE_CLIENTS"))
 
 def fit_config(server_round: int):
     """Return training configuration dict for each round."""

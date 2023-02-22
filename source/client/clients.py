@@ -5,13 +5,17 @@ from typing import Dict, List, Tuple
 import numpy as np
 from torch.utils.data import DataLoader
 import torch
-
+from os import environ
 from ..models import cifar as model
+
 
 import flwr as fl
 
-#DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-DEVICE: str = torch.device("cpu")
+if environ.get('FL_CLIENT_DEVICE'):
+    DEVICE: str = environ.get('FL_CLIENT_DEVICE')
+else:
+    DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 
 class CifarClient(fl.client.NumPyClient):
     __trainloader: DataLoader
