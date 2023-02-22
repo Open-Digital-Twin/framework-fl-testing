@@ -1,9 +1,6 @@
 FROM apache/superset
 # Switching to root to install the required packages
-USER root
-COPY ./docker/apache-superset/entrypoint.sh /
-RUN chmod 777 /entrypoint.sh
-USER superset
+
 
 RUN superset fab create-admin \
               --username admin \

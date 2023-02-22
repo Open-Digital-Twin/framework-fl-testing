@@ -1,5 +1,5 @@
 from typing import Union
-from ..models import cifar as model
+from .models import cifar as model
 
 from flwr.common import (
     EvaluateIns,

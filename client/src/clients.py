@@ -6,7 +6,7 @@ import numpy as np
 from torch.utils.data import DataLoader
 import torch
 from os import environ
-from ..models import cifar as model
+from .models import cifar as model
 
 
 import flwr as fl
