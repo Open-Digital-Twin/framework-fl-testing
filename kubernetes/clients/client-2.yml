@@ -20,7 +20,7 @@ spec:
         app.kubernetes.io/name: fl-framework-cifar
     spec:
       containers:
-        - name: client0
+        - name: client2
           image: 'fschwanck/fl-framework-client:latest'
           env:
             - name: FL_CLIENT_DEVICE
@@ -36,4 +36,4 @@ spec:
               mountPath: MOUNT_PATH
               subPath: SUB_PATH
       nodeSelector:
-        kubernetes.io/hostname: mac-porvir-02
+        kubernetes.io/hostname: mac-porvir-03
