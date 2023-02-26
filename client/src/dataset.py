@@ -29,7 +29,11 @@ class CIFAR10_BATCH(CIFAR10):
     ]
 
     test_list = [
-        ["test_batch", "40351d587109b95175f43aff81a1287e"],
+        ["test_batch_1", "ee4ba408bb62d59387261042d87cd0f8"],
+        ["test_batch_2", "791ae5a9d54596e48fcf5d4da7670b96"],
+        ["test_batch_3", "53bb64cf85831db1ab03e31498065bef"],
+        ["test_batch_4", "bc963af73e329af9ade2691e51ec705f"],
+        ["test_batch_5", "198c988130df31baad974f54fa86e92c"],
     ]
     meta = {
         "filename": "batches.meta",
@@ -39,4 +43,5 @@ class CIFAR10_BATCH(CIFAR10):
 
     def __init__(self, root: str, batch: int, train: bool=False, transform: callable = None, target_transform: callable=None, download: bool=False):
         self.train_list = [self.train_list[batch-1]]
+        self.test_list = [self.test_list[batch-1]]
         super().__init__(root, train, transform,target_transform,download)

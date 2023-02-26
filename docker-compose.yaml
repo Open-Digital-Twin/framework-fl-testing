@@ -11,7 +11,7 @@ services:
       - MIN_AVAILABLE_CLIENTS=5
       - SERVER_NUM_ROUNDS=2
       - CERTIFICATES_PATH=./.cache/certificates
-      - CLIENT_LOCAL_EPOCHS=3
+      - CLIENT_LOCAL_EPOCHS=1
       - FLWR_TELEMETRY_ENABLED=0
       - SERVER_NAME=fl-framework-server
     networks:
@@ -28,7 +28,7 @@ services:
 
 
 
-  client-1:
+  fl-framework-client-1:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
       - SERVER_ADDRESS=fl-framework-server:8080
@@ -50,7 +50,7 @@ services:
     - ./data:/data
       
 
-  client-2:
+  fl-framework-client-2:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
       - SERVER_ADDRESS=fl-framework-server:8080
@@ -72,7 +72,7 @@ services:
     volumes:
     - ./data:/data
     
-  client-3:
+  fl-framework-client-3:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
       - SERVER_ADDRESS=fl-framework-server:8080
@@ -95,7 +95,7 @@ services:
     volumes:
     - ./data:/data
   
-  client-4:
+  fl-framework-client-4:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
       - SERVER_ADDRESS=fl-framework-server:8080
@@ -117,7 +117,7 @@ services:
     volumes:
     - ./data:/data
 
-  client-5:
+  fl-framework-client-5:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
       - SERVER_ADDRESS=fl-framework-server:8080
