@@ -2,15 +2,18 @@ version: '2'
 
 services:
 
-  server:
+  fl-framework-server:
     image: 'fschwanck/fl-framework-server:latest'
     environment:
       - SERVER_ADDRESS=0.0.0.0:8080
       - FRACTION_FIT=1
       - MIN_FIT_CLIENTS=3
-      - MIN_AVAILABLE_CLIENTS=3
+      - MIN_AVAILABLE_CLIENTS=5
       - SERVER_NUM_ROUNDS=2
       - CERTIFICATES_PATH=./.cache/certificates
+      - CLIENT_LOCAL_EPOCHS=3
+      - FLWR_TELEMETRY_ENABLED=0
+      - SERVER_NAME=fl-framework-server
     networks:
       - mynet
       
@@ -25,13 +28,15 @@ services:
 
 
 
-  client0:
+  client-1:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
-      - SERVER_ADDRESS=server:8080
+      - SERVER_ADDRESS=fl-framework-server:8080
       - FL_CLIENT_DEVICE=cpu
       - CERTIFICATES_PATH=./.cache/certificates
       - DATA_PATH=./data/cifar-10
+      - DATA_BATCH_NUMBER=1
+      - FLWR_TELEMETRY_ENABLED=0
       
     networks:
       - mynet
@@ -45,13 +50,15 @@ services:
     - ./data:/data
       
 
-  client1:
+  client-2:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
-      - SERVER_ADDRESS=server:8080
+      - SERVER_ADDRESS=fl-framework-server:8080
       - FL_CLIENT_DEVICE=cpu
       - CERTIFICATES_PATH=./.cache/certificates
       - DATA_PATH=./data/cifar-10
+      - DATA_BATCH_NUMBER=2
+      - FLWR_TELEMETRY_ENABLED=0
       
     networks:
       - mynet
@@ -65,13 +72,16 @@ services:
     volumes:
     - ./data:/data
     
-  client2:
+  client-3:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
-      - SERVER_ADDRESS=server:8080
+      - SERVER_ADDRESS=fl-framework-server:8080
       - FL_CLIENT_DEVICE=cpu
       - CERTIFICATES_PATH=./.cache/certificates
       - DATA_PATH=./data/cifar-10
+      - DATA_BATCH_NUMBER=3
+      - FLWR_TELEMETRY_ENABLED=0
+      
 
       
     networks:
@@ -85,13 +95,37 @@ services:
     volumes:
     - ./data:/data
   
-  client3:
+  client-4:
     image: 'fschwanck/fl-framework-client:latest'
     environment:
-      - SERVER_ADDRESS=server:8080
+      - SERVER_ADDRESS=fl-framework-server:8080
       - FL_CLIENT_DEVICE=cpu
       - CERTIFICATES_PATH=./.cache/certificates
       - DATA_PATH=./data/cifar-10
+      - DATA_BATCH_NUMBER=4
+      - FLWR_TELEMETRY_ENABLED=0
+
+      
+    networks:
+      - mynet
+    restart: always
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type==worker
+    volumes:
+    - ./data:/data
+
+  client-5:
+    image: 'fschwanck/fl-framework-client:latest'
+    environment:
+      - SERVER_ADDRESS=fl-framework-server:8080
+      - FL_CLIENT_DEVICE=cpu
+      - CERTIFICATES_PATH=./.cache/certificates
+      - DATA_PATH=./data/cifar-10
+      - DATA_BATCH_NUMBER=5
+      - FLWR_TELEMETRY_ENABLED=0
 
       
     networks:
