@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fl-framework-client-0
+  name: fl-framework-client-2
   namespace: fschwanck
   labels:
     app.kubernetes.io/component: fl-framework
-    app.kubernetes.io/name: fl-framework-client-0
+    app.kubernetes.io/name: fl-framework-client-2
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: fl-framework
-      app.kubernetes.io/name: fl-framework-client-0
+      app.kubernetes.io/name: fl-framework-client-2
   replicas: 1
   strategy:
     type: Recreate
@@ -18,14 +18,14 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/component: fl-framework
-        app.kubernetes.io/name: fl-framework-client-0
+        app.kubernetes.io/name: fl-framework-client-2
     spec:
       volumes:
         - name: fl-dataset
           persistentVolumeClaim:
             claimName: fl-framework-storageclaim
       containers:
-        - name: client-0
+        - name: fl-framework-client-2
           imagePullPolicy: Always
           image: 'fschwanck/fl-framework-client:latest'
           env:
@@ -37,6 +37,8 @@ spec:
               value: fl-framework-server:8080
             - name: DATA_PATH
               value: ./data/cifar-10
+            - name: DATA_BATCH_NUMBER
+              value: '1'
           volumeMounts:
             - name: fl-dataset
               mountPath: /data

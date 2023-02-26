@@ -25,7 +25,7 @@ spec:
           persistentVolumeClaim:
             claimName: fl-framework-storageclaim
       containers:
-        - name: client-1
+        - name: fl-framework-client-1
           imagePullPolicy: Always
           image: 'fschwanck/fl-framework-client:latest'
           env:
@@ -37,8 +37,10 @@ spec:
               value: fl-framework-server:8080
             - name: DATA_PATH
               value: ./data/cifar-10
+            - name: DATA_BATCH_NUMBER
+              value: '1'
           volumeMounts:
             - name: fl-dataset
               mountPath: /data
       nodeSelector:
-        kubernetes.io/hostname: mac-porvir-03
+        kubernetes.io/hostname: mac-porvir-02

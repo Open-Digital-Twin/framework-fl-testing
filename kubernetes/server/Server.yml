@@ -37,8 +37,15 @@ spec:
             - name: FRACTION_FIT
               value: '1'
             - name: MIN_FIT_CLIENTS
-              value: '2'
+              value: '3'
             - name: MIN_AVAILABLE_CLIENTS
-              value: '2'
+              value: '5'
+            - name: CLIENT_LOCAL_EPOCHS
+              value: '1'
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
       nodeSelector:
         kubernetes.io/hostname: mac-porvir-01
+    networks:
