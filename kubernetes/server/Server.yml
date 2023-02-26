@@ -13,7 +13,7 @@ spec:
       app.kubernetes.io/name: fl-framework-server
   replicas: 1
   strategy:
-    type: Recreate
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -23,13 +23,13 @@ spec:
       containers:
         - name: flserver
           image: 'fschwanck/fl-framework-server:latest'
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - name: flserver
               containerPort: 8080
           env:
             - name: SERVER_NUM_ROUNDS
-              value: '1'
+              value: '10'
             - name: CERTIFICATES_PATH
               value: ./.cache/certificates
             - name: SERVER_ADDRESS
@@ -41,11 +41,17 @@ spec:
             - name: MIN_AVAILABLE_CLIENTS
               value: '5'
             - name: CLIENT_LOCAL_EPOCHS
-              value: '1'
+              value: '3'
             - name: FLWR_TELEMETRY_ENABLED
               value: '0'
             - name: SERVER_NAME
               value: fl-framework-server
+          volumeMounts:
+            - name: fl-dataset
+              mountPath: /data
+      volumes:
+        - name: fl-dataset
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
       nodeSelector:
-        kubernetes.io/hostname: mac-porvir-01
-    networks:
+        kubernetes.io/hostname: brix-porvir-01

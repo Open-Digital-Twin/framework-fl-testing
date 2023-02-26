@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fl-framework-client-1
+  name: fl-framework-client-5
   namespace: fschwanck
   labels:
     app.kubernetes.io/component: fl-framework
-    app.kubernetes.io/name: fl-framework-client-1
+    app.kubernetes.io/name: fl-framework-client-5
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: fl-framework
-      app.kubernetes.io/name: fl-framework-client-1
+      app.kubernetes.io/name: fl-framework-client-5
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -18,14 +18,14 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/component: fl-framework
-        app.kubernetes.io/name: fl-framework-client-1
+        app.kubernetes.io/name: fl-framework-client-5
     spec:
       volumes:
         - name: fl-dataset
           persistentVolumeClaim:
             claimName: fl-framework-storageclaim
       containers:
-        - name: fl-framework-client-1
+        - name: fl-framework-client-5
           imagePullPolicy: Always
           image: 'fschwanck/fl-framework-client:latest'
           env:
@@ -43,4 +43,4 @@ spec:
             - name: fl-dataset
               mountPath: /data
       nodeSelector:
-        kubernetes.io/hostname: mac-porvir-01
+        kubernetes.io/hostname: mac-porvir-05
