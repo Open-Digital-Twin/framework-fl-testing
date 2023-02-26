@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fl-framework-server
+  namespace: fschwanck
   labels:
     app.kubernetes.io/component: fl-framework
     app.kubernetes.io/name: fl-framework-server
@@ -12,7 +13,7 @@ spec:
       app.kubernetes.io/name: fl-framework-server
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       labels:
@@ -20,11 +21,11 @@ spec:
         app.kubernetes.io/name: fl-framework-server
     spec:
       containers:
-        - name: server
+        - name: flserver
           image: 'fschwanck/fl-framework-server:latest'
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
-            - name: fl_server
+            - name: flserver
               containerPort: 8080
           env:
             - name: SERVER_NUM_ROUNDS
@@ -34,7 +35,7 @@ spec:
             - name: SERVER_ADDRESS
               value: 0.0.0.0:8080
             - name: FRACTION_FIT
-              value: '2'
+              value: '1'
             - name: MIN_FIT_CLIENTS
               value: '2'
             - name: MIN_AVAILABLE_CLIENTS

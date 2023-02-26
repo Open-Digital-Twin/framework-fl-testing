@@ -1,5 +1,5 @@
 from typing import Union
-from .models import cifar as model
+from .model import CifarModel
 
 from flwr.common import (
     EvaluateIns,
@@ -15,19 +15,17 @@ from flwr.common import (
 )
 from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
+from flwr.server import strategy 
 from flwr.server.strategy.aggregate import aggregate, weighted_loss_avg
 from typing import Dict, List, Tuple, Optional
 import numpy as np
 
 
-import flwr as fl
-
-
-class AggregateCustomMetricStrategy(fl.server.strategy.FedAvg):
+class AggregateCustomMetricStrategy(strategy.FedAvg):
     def aggregate_evaluate(
         self,
         rnd: int,
-        results: List[Tuple[fl.server.client_proxy.ClientProxy, fl.common.FitRes]],
+        results: List[Tuple[ClientProxy, FitRes]],
         failures: List[BaseException],
     ):
         """Aggregate evaluation losses using weighted average."""
@@ -48,7 +46,7 @@ class AggregateCustomMetricStrategy(fl.server.strategy.FedAvg):
  
 
 
-class FedCustom(fl.server.strategy.Strategy):
+class FedCustom(strategy.Strategy):
     def __init__(
         self,
         fraction_fit: float = 1.0,
@@ -75,9 +73,9 @@ class FedCustom(fl.server.strategy.Strategy):
         self, client_manager: ClientManager
     ) -> Optional[Parameters]:
         """Initialize global model parameters."""
-        net = model.Net()
+        net = CifarModel.Net()
         ndarrays = self.get_parameters(net)
-        return fl.common.ndarrays_to_parameters(ndarrays)
+        return ndarrays_to_parameters(ndarrays)
 
     def configure_fit(
         self, server_round: int, parameters: Parameters, client_manager: ClientManager

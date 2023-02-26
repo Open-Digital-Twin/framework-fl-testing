@@ -1,26 +1,24 @@
+
+
+from .model import CifarModel
+
+import torch
+import numpy as np
+from torch.utils.data import DataLoader
+
 from collections import OrderedDict
 from typing import Dict, List, Tuple
 
-
-import numpy as np
-from torch.utils.data import DataLoader
-import torch
-from os import environ
-from .models import cifar as model
+from flwr import client
+from flwr.common.logger import log
+from logging import DEBUG, INFO
 
 
-import flwr as fl
 
-if environ.get('FL_CLIENT_DEVICE'):
-    DEVICE: str = environ.get('FL_CLIENT_DEVICE')
-else:
-    DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
-class CifarClient(fl.client.NumPyClient):
+class CifarClient(client.NumPyClient):
     __trainloader: DataLoader
     __testloader: DataLoader
-    __net: model.Net
+    __model: CifarModel
     __num_examples: Dict[str, int]
   
 
@@ -29,32 +27,34 @@ class CifarClient(fl.client.NumPyClient):
         trainloader: DataLoader,
         testloader: DataLoader,
         num_examples: Dict,
-        net: model.Net = model.Net().to(DEVICE)
+        model: CifarModel
     ) -> None:
-        self.__net = net
+        self.__model = model
         self.__trainloader = trainloader
         self.__testloader = testloader
         self.__num_examples = num_examples
 
+    
+
     def get_parameters(self, config) -> List[np.ndarray]:
         # Return model parameters as a list of NumPy ndarrays
-        return [val.cpu().numpy() for _, val in self.__net.state_dict().items()]
+        return [val.cpu().numpy() for _, val in self.__model.net.state_dict().items()]
 
     def set_parameters(self, parameters: List[np.ndarray]) -> None:
         # Set model parameters from a list of NumPy ndarrays
-        params_dict = zip(self.__net.state_dict().keys(), parameters)
+        params_dict = zip(self.__model.net.state_dict().keys(), parameters)
         state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-        self.__net.load_state_dict(state_dict, strict=True)
+        self.__model.net.load_state_dict(state_dict, strict=True)
 
     def fit(
         self, parameters: List[np.ndarray], config: Dict[str, str]
     ) -> Tuple[List[np.ndarray], int, Dict]:
-        print(config["batch_size"])  # Prints `32`
-        print(config["current_round"])  # Prints `1`/`2`/`...`
-        print(config["local_epochs"])  # Prints `2`
+
         # Set model parameters, train model, return updated model parameters
         self.set_parameters(parameters)
-        model.train(self.__net, self.__trainloader, epochs=config["local_epochs"], device=DEVICE)
+        log(INFO, f'Starting server {config["server_name"]} training round number {config["current_round"]} of {config["server_num_rounds"]}')
+    
+        self.__model.train(self.__trainloader, epochs=config["local_epochs"])
         return self.get_parameters(config), self.__num_examples["trainset"], {}
 
     def evaluate(
@@ -62,5 +62,6 @@ class CifarClient(fl.client.NumPyClient):
     ) -> Tuple[float, int, Dict]:
         # Set model parameters, evaluate model on local test dataset, return result
         self.set_parameters(parameters)
-        loss, accuracy = model.test(self.__net, self.__testloader, device=DEVICE)
+        #log(INFO, f'Starting server {config["server_name"]} evaluation round number {config["current_round"]} of {config["server_num_rounds"]}')
+        loss, accuracy = self.__model.test(self.__testloader)
         return float(loss), self.__num_examples["testset"], {"accuracy": float(accuracy)}

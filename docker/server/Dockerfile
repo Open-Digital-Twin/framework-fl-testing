@@ -12,4 +12,4 @@ ADD ./.cache/certificates .cache/certificates
 EXPOSE 8080
 
 
-CMD [ "python","-m","server.main" ]
+CMD [ "python","-u","-m","server.main" ]

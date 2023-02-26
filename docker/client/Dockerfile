@@ -11,4 +11,4 @@ ADD ./.cache/certificates .cache/certificates
 
 
 
-CMD [ "python","-m","client.main" ]
+CMD [ "python","-u","-m","client.main" ]
