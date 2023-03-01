@@ -45,7 +45,7 @@ def load_data(DATA_PATH, DATA_BATCH_NUMBER):
 
 def main() -> None:
     RETRIES=5
-    print("Federated PyTorch Cifar-10 training")
+    log(INFO,"Federated PyTorch Cifar-10 training")
     log(INFO, f"Loading data from: {DATA_PATH}, Batch Number={DATA_BATCH_NUMBER}")
     
     trainloader, testloader, num_examples = load_data(DATA_PATH, DATA_BATCH_NUMBER)

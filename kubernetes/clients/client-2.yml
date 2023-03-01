@@ -38,7 +38,7 @@ spec:
             - name: DATA_PATH
               value: ./data/cifar-10
             - name: DATA_BATCH_NUMBER
-              value: '1'
+              value: '2'
           volumeMounts:
             - name: fl-dataset
               mountPath: /data

@@ -41,7 +41,7 @@ spec:
             - name: MIN_AVAILABLE_CLIENTS
               value: '5'
             - name: CLIENT_LOCAL_EPOCHS
-              value: '3'
+              value: '10'
             - name: FLWR_TELEMETRY_ENABLED
               value: '0'
             - name: SERVER_NAME

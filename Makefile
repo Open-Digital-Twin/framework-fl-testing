@@ -10,6 +10,7 @@ CLIENT_DIR=./client
 DOCKER_USER=fschwanck
 KUBERNETES_SERVER=blacksabbath.inf.ufrgs.br
 SSH_USER=fmschwanck
+DATASET_DIR=./dataset
 
 .PHONY: install-poetry
 install-poetry:
@@ -36,7 +37,7 @@ docker-build-client: ${DOCKER_DIR}/client/Dockerfile certificates
 	docker build -t '$(DOCKER_USER)/fl-framework-client:${VERSION}'  -f ${DOCKER_DIR}/client/Dockerfile .
 	docker push $(DOCKER_USER)/fl-framework-client:${VERSION}
 
-docker-build-server: ./docker/server/Dockerfile certificates
+docker-build-server: ${DOCKER_DIR}/server/Dockerfile certificates
 	poetry export -C $(SERVER_DIR) --without-hashes --format=requirements.txt > ${DOCKER_DIR}/server/requirements.txt
 	docker build -t '$(DOCKER_USER)/fl-framework-server:${VERSION}'  -f ${DOCKER_DIR}/server/Dockerfile .
 	docker push $(DOCKER_USER)/fl-framework-server:${VERSION}
@@ -55,3 +56,6 @@ connect-kubernetes:
 
 certificates: 
 	sh ${SCRIPTS_DIR}/certificates/generate.sh
+
+shell:
+	poetry shell -C ${DATASET_DIR}
