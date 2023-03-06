@@ -10,7 +10,7 @@ CLIENT_DIR=./client
 DOCKER_USER=fschwanck
 KUBERNETES_SERVER=blacksabbath.inf.ufrgs.br
 SSH_USER=fmschwanck
-DATASET_DIR=./dataset
+
 
 .PHONY: install-poetry
 install-poetry:
@@ -57,5 +57,5 @@ connect-kubernetes:
 certificates: 
 	sh ${SCRIPTS_DIR}/certificates/generate.sh
 
-shell:
-	poetry shell -C ${DATASET_DIR}
+shell-server:
+	poetry shell -C ${SERVER_DIR}
