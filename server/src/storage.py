@@ -3,79 +3,88 @@ import ujson
 import numpy as np
 from sklearn.model_selection import train_test_split
 from os import path, makedirs
-from .dataset import Dataset, Cifar10Dataset
+from .dataset import Dataset
 import numpy as np
 from typing import Optional, Dict
+from flwr.common.logger import log
+from flwr.common.logger import configure as configure_logger
+from logging import INFO
+
+import shutil
+
+    
+
 
 class StorageManager():
 
-    experiment_path: str
-    data_distribution_path: str
-    use_cache: bool
-    
+    __experiment_path: str
+    __experiment_name: str
+    __use_cache: bool
+    __experiment_config: dict
+   
 
 
-    def __init__(self, experiment_path, data_distribution_path: Optional[str] = None):
-        self.experiment_path = experiment_path
-        self.data_distribution_path = data_distribution_path
+    def __init__(self, experiment_path:str, experiment_name: str, use_cache_always: bool = True):
+        self.__experiment_path = experiment_path
+        self.__experiment_name= experiment_name
+        self.experiment_config= {"dataset": {},
+                        "experiment": self.__experiment_name,
+                        "current_run_number": 0
+                        }
+        self.__use_cache = use_cache_always
+        
 
     def __check_experiment_path(self, file_name:  Optional[str] = None):
-        return path.exists(self.experiment_path + file_name)
+        if file_name:
+            return path.exists(self.__experiment_path + file_name)
+        else:
+            return path.exists(self.__experiment_path)
+        
+   
     
-    def __check_data_distribution_path(self):
-        return path.exists(self.data_distribution_path)
+
     
-    def __initialize_experiment_path(self):
+    def initialize_experiment_path(self: str):
+        log(INFO, f"Initializing experiment path: {self.__experiment_path + self.__experiment_name}")
         if not self.__check_experiment_path():
-            makedirs(self.experiment_path)
-        if not self.__check_experiment_path("runs"):
-            makedirs(self.experiment_path + "runs")
-        if not self.__check_experiment_path("logs"):
-            makedirs(self.experiment_path + "logs")
-        if not self.__check_experiment_path("config.json"):
-            with open(self.experiment_path + "config.json", 'a') as config_file:
-                ujson.dump({"dataset": {}},config_file)
-
-    def __load_current_experiment_config(self) -> Dict:
-        with open(self.experiment_path  + "config.json", 'r') as f:
-            config = ujson.load(f)
-            return config
-       
-     def __check_current_experiment_data_distribution(self):
-        # check existing dataset
-        with self.__load_current_experiment_config() as config:
-            if config['data_distribution_path']:
-                self.data_distribution_path = config['data_distribution_path']
-                if self.__check_data_distribution_path():
-                with open(config['data_distribution_path'], 'r') as f2:
-                    dataset_config = ujson.load(f)
-                    if dataset_config['dataset'] ==  config["dataset"]:
-                        return True
-                    
-                if config['dataset'] == dataset.get_config():
-                    return True
-                else:
-                    return False
-            else:
-                return False    
+            makedirs(self.__experiment_path)
+        if not self.__check_experiment_path(self.__experiment_name):
+            makedirs(self.__experiment_path + f"{self.__experiment_name}/runs")
+        if not self.__check_experiment_path(f"{self.__experiment_name}/runs"):
+            makedirs(self.__experiment_path + f"{self.__experiment_name}/runs")
+        if not self.__check_experiment_path(f"{self.__experiment_name}/logs"):
+            makedirs(self.__experiment_path + f"{self.__experiment_name}/logs")
+        if not self.__check_experiment_path(f"{self.__experiment_name}/data"):
+            makedirs(self.__experiment_path + f"{self.__experiment_name}/data")
+        shutil.rmtree(self.__experiment_path + f"{self.__experiment_name}/data/train", ignore_errors=True)
+        makedirs(self.__experiment_path + f"{self.__experiment_name}/.temp")
+        
+        
             
-                
 
+    def load_experiment_config(self):
+        
+        if self.__check_experiment_path(f"{self.__experiment_name}/config.json"):
+            with open(self.__experiment_path  + f"{self.__experiment_name}/config.json", 'r') as f:
+                self.experiment_config = ujson.load(f)
+                log(INFO, f"Found experiment config {self.__experiment_path + self.__experiment}")
+            return True
+        else:
+            log(INFO, f"Missing experiment config file")
+            return False
+ 
+    
 
 
     
     
-    def __check_current_dataset_config(self, dataset: Dataset):
+    def __check_current_dataset_config(self,  dataset: Dataset):
         # check existing dataset
-        if self.__check_experiment_path('config.json'):
-            with open(self.experiment_path  + "config.json", 'r') as f:
-                config = ujson.load(f)
-            if config['dataset'] == dataset.get_config():
+            if self.experiment_config['dataset'] == dataset.get_config():
                 return True
             else:
                 return False
-        else:
-            return False
+
 
     def __separate_data(self, dataset: Dataset) -> bool:
         X = [[] for _ in range(dataset.num_clients)]
@@ -168,6 +177,7 @@ class StorageManager():
 
     def __split_data(self, X, y, dataset: Dataset) -> tuple:
         # Split dataset
+        log(INFO, f"Distributing the dataset to {dataset.num_clients} clients.")
         train_data, test_data = [], []
         num_samples = {'train':[], 'test':[]}
 
@@ -189,40 +199,77 @@ class StorageManager():
 
         return train_data, test_data
 
-    def __save_file(self, dataset: Dataset, statistic, train_data, test_data):
-        config= {}
-        config.update({'dataset': dataset.get_config()})
-        config.update({'statistic': statistic})
 
+    def update_experiment_config(self, key, value ):
+        self.experiment_config.update({key: value})
+    
+    def save_experiment_config(self):
+        log(INFO, f"Saving experiment config: {self.__experiment_path + self.__experiment_name}")
+        with open(self.__experiment_path + f"{self.__experiment_name}" + "/config.json", 'w') as f:
+            ujson.dump(self.experiment_config, f)
+        
+
+    def __save_data_distribution(self, train_data, test_data):       
         # gc.collect()
-        print("Saving to disk.\n")
-        dir_path = path.dirname(self.experiment_path + "train/")
-        if not path.exists(dir_path):
-            makedirs(dir_path)
-        dir_path = path.dirname(self.experiment_path + "test/")
-        if not path.exists(dir_path):
-            makedirs(dir_path)
-
+        log(INFO, f"Saving data distribution")
         for idx, train_dict in enumerate(train_data):
-            with open(self.experiment_path + "train/" + str(idx) + '.npz', 'wb') as f:
+            with open(self.__experiment_path + f"{self.__experiment_name}/data/train/" + str(idx) + '.npz', 'wb') as f:
                 np.savez_compressed(f, data=train_dict)
         for idx, test_dict in enumerate(test_data):
-            with open(self.experiment_path + "test/" + str(idx) + '.npz', 'wb') as f:
+            with open(self.__experiment_path + f"{self.__experiment_name}/data/test/" + str(idx) + '.npz', 'wb') as f:
                 np.savez_compressed(f, data=test_dict)
-        with open(self.experiment_path + "config.json", 'w') as f:
-            ujson.dump(config, f)
+        log(INFO, f"Data distribution saved")
 
-        print("Finish generating dataset.\n")
+    def check_dataset(self, dataset: Dataset):
 
-    def distribute(self, dataset: Dataset):
-        if self.__check_current_dataset_config(dataset):
-            print("message good")
+        log(INFO, f"Checking if the experiment dataset configuration changed.")
+        if self.__check_current_dataset_config(dataset) and self.__use_cache:
+            log(INFO, f"The experiment dataset configuration has not changed.")
+            log(INFO, f"The experiment will run with last configuration")
             return True
         else:
-            X, y, statistic = self.__separate_data(dataset)
-            train_data, test_data = self.__split_data(X, y, dataset)
-            self.__save_file(dataset,statistic, train_data, test_data, )
-                        
-datasetmanager = DatasetManager(experiment_path = "./experiment/")
-dataset = Cifar10Dataset(10,niid=True,partition='pat', balance=False)
-datasetmanager.distribute(dataset)
+            log(INFO, f"The experiment dataset configuration has changed.")
+            log(INFO, f"The experiment will run with new configuration")
+        return False
+    
+    def __delete_distribution(self):
+        shutil.rmtree(self.__experiment_path + f"{self.__experiment_name}/data/train", ignore_errors=True)
+        shutil.rmtree(self.__experiment_path + f"{self.__experiment_name}/data/test", ignore_errors=True)
+
+    def __distribute_dataset(self, dataset: Dataset):
+        
+        X, y, statistic = self.__separate_data(dataset)
+        train_data, test_data = self.__split_data(X, y, dataset)
+        self.__delete_distribution()
+        if not self.__check_experiment_path(f"{self.__experiment_name}/data/test"):
+            makedirs(self.__experiment_path + f"{self.__experiment_name}/data/test")
+        if not self.__check_experiment_path(f"{self.__experiment_name}/data/train"):
+            makedirs(self.__experiment_path + f"{self.__experiment_name}/data/train")
+        self.__save_data_distribution(train_data, test_data)
+        self.update_experiment_config('statistic', statistic)
+        self.update_experiment_config('dataset', dataset.get_config())
+
+    def start_experiment(self, dataset):
+        self.initialize_experiment_path()
+        if self.load_experiment_config():
+            if self.check_dataset(dataset):
+                return
+            else:
+                self.__distribute_dataset(dataset)
+        else:
+            self.__distribute_dataset(dataset)
+        self.update_experiment_config("current_run_number", self.__experiment_config['current_run_number'] + 1)
+
+    def end_experiment(self):
+        shutil.move(f"{self.__experiment_path}{self.__experiment_name}/.temp", f"{self.__experiment_path}{self.__experiment_name}/runs/{self.__experiment_config['current_run_number']}")
+        self.save_experiment_config()
+
+        
+        
+        
+        
+
+    
+        
+            
+                       

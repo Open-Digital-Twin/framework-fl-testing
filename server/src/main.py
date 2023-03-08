@@ -5,10 +5,20 @@ from os import environ
 
 from flwr import server
 from flwr.common.logger import log
+from flwr.common.logger import configure as configure_logger
 from logging import INFO
 
+from .dataset import Cifar10Dataset
+from .storage import StorageManager
 
 
+
+
+DEFAULT_LOG_DATA_PATH = "./experiments/server.log"
+DEFAULT_EXPERIMENT_PATH = "./experiments/"
+EXPERIMENT_NAME = environ.get("EXPERIMENT_NAME")
+
+configure_logger("file", filename=DEFAULT_LOG_DATA_PATH)
 
 SERVER_NUM_ROUNDS = int(environ.get("SERVER_NUM_ROUNDS"))
 CERTIFICATES_PATH = environ.get("CERTIFICATES_PATH")
@@ -42,6 +52,8 @@ def evaluate_config(server_round: int):
 
 
 def main() -> None:
+
+
     # Pass parameters to the Strategy for server-side parameter initialization
     
     strategy = strategies.AggregateCustomMetricStrategy(
@@ -52,7 +64,12 @@ def main() -> None:
         on_evaluate_config_fn=evaluate_config
     )
 
+    storage = StorageManager(DEFAULT_EXPERIMENT_PATH, EXPERIMENT_NAME)
+    dataset = Cifar10Dataset(10,partition='pat',balance=True,niid=True)
+    
+
   
+    storage.start_experiment(dataset)
 
 
 
@@ -60,13 +77,14 @@ def main() -> None:
 
     server.start_server(
         server_address=SERVER_ADDRESS, 
-        config=server.ServerConfig(num_rounds=SERVER_NUM_ROUNDS), 
-        certificates=(
-            Path(f"{CERTIFICATES_PATH}/ca.crt").read_bytes(),
-            Path(f"{CERTIFICATES_PATH}/server.pem").read_bytes(),
-            Path(f"{CERTIFICATES_PATH}/server.key").read_bytes()
-        ),
-        strategy=strategy)
+       config=server.ServerConfig(num_rounds=SERVER_NUM_ROUNDS), 
+       certificates=(
+           Path(f"{CERTIFICATES_PATH}/ca.crt").read_bytes(),
+           Path(f"{CERTIFICATES_PATH}/server.pem").read_bytes(),
+           Path(f"{CERTIFICATES_PATH}/server.key").read_bytes()
+      ),
+       strategy=strategy)
+    storage.end_experiment()
 
 if __name__ == "__main__":
     main()

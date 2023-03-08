@@ -15,6 +15,7 @@ DEFAULT_BALANCE = True
 DEFAULT_PARTITION = None
 DEFAULT_RAW_DATA_PATH = "./data/rawdata/"
 
+
 class Dataset:
     name: str
     least_samples: float
@@ -96,7 +97,7 @@ class Cifar10Dataset(Dataset):
                  balance: bool=DEFAULT_BALANCE, 
                  partition: str=DEFAULT_PARTITION, 
                  train_size: float = DEFAULT_TRAIN_SIZE):
-        super().__init__("Cifar-10",num_clients, 10, rawdata_path, batch_size, class_per_client, alpha, niid, balance, partition, train_size)
+        super().__init__("cifar-10",num_clients, 10, rawdata_path, batch_size, class_per_client, alpha, niid, balance, partition, train_size)
 
 
 
