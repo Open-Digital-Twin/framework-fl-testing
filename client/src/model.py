@@ -8,7 +8,6 @@ from flwr.common.logger import log
 from logging import DEBUG
 
 
-
 class Net(nn.Module):
     """Define class for neural network initialization"""
     def __init__(self) -> None:
@@ -98,14 +97,19 @@ class CifarModel(CNNModel):
         correct = 0
         total = 0
         loss = 0.0
+        predicteds = []
+        trues = []
         with torch.no_grad():
             for data in testloader:
                 images, labels = data[0].to(self.device), data[1].to(self.device)
                 outputs = self.net(images)
                 loss += criterion(outputs, labels).item()
                 _, predicted = torch.max(outputs.data, 1)
+                predicteds.extend(predicted)
+                trues.extend(labels)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
+        
         accuracy = correct / total
         log(DEBUG,f"accuracy = {accuracy}, correct = {correct}, total = {total}")
-        return loss, accuracy
+        return predicteds, trues, loss, accuracy

@@ -10,6 +10,7 @@ services:
     networks:
       - mynet
       
+    restart: always
     deploy:
       replicas: 1
       placement:
@@ -37,7 +38,7 @@ services:
       
     networks:
       - mynet
-
+    restart: always
     deploy:
       replicas: 1
       placement:
@@ -60,6 +61,7 @@ services:
     networks:
       - mynet
 
+    restart: always
     deploy:
       replicas: 1
       placement:
@@ -69,7 +71,72 @@ services:
     - ./data:/data
     - ./experiments:/experiments
     
+  fl-framework-client-2:
+    image: 'fschwanck/fl-framework-client:latest'
+    env_file:
+      - ./common.env
+      - ./client.env
+    environment:
+      - CLIENT_ID=2
+      - FLWR_TELEMETRY_ENABLED=0
+      
 
+      
+    networks:
+      - mynet
+    restart: always
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type==worker
+    volumes:
+    - ./data:/data
+    - ./experiments:/experiments
+  
+  fl-framework-client-3:
+    image: 'fschwanck/fl-framework-client:latest'
+    env_file:
+      - ./common.env
+      - ./client.env
+    environment:
+      - CLIENT_ID=3
+      - FLWR_TELEMETRY_ENABLED=0
+
+      
+    networks:
+      - mynet
+    restart: always
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type==worker
+    volumes:
+    - ./data:/data
+    - ./experiments:/experiments
+
+  fl-framework-client-4:
+    image: 'fschwanck/fl-framework-client:latest'
+    env_file:
+      - ./common.env
+      - ./client.env
+    environment:
+      - CLIENT_ID=4
+      - FLWR_TELEMETRY_ENABLED=0
+
+      
+    networks:
+      - mynet
+    restart: always
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type==worker
+    volumes:
+    - ./data:/data
+    - ./experiments:/experiments
  
 networks:
   mynet:

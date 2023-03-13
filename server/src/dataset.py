@@ -133,7 +133,100 @@ class Cifar10Dataset(Dataset):
         return dataset_image, dataset_label
     
     
+class Cifar100Dataset(Dataset):
+    
+    def __init__(self, 
+                 num_clients: int, 
+                 rawdata_path: str = DEFAULT_RAW_DATA_PATH + 'cifar-100',
+                 batch_size: int = DEFAULT_BATCH_SIZE, 
+                 class_per_client: int=DEFAULT_CLASS_PER_CLIENT, 
+                 alpha: float = DEFAULT_ALPHA_SIZE, 
+                 niid: bool=DEFAULT_NIID, 
+                 balance: bool=DEFAULT_BALANCE, 
+                 partition: str=DEFAULT_PARTITION, 
+                 train_size: float = DEFAULT_TRAIN_SIZE):
+        super().__init__("cifar-100",num_clients, 10, rawdata_path, batch_size, class_per_client, alpha, niid, balance, partition, train_size)
 
+
+
+
+    def get_rawdata(self) -> Tuple:
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+        if not path.exists(self.rawdata_path):
+            makedirs(self.rawdata_path)
+        
+        trainset = datasets.CIFAR100(root=self.rawdata_path, train=True, download=True, transform=transform)
+        testset = datasets.CIFAR100(root=self.rawdata_path, train=False, download=True, transform=transform)
+        trainloader = utils.data.DataLoader(
+        trainset, batch_size=len(trainset.data), shuffle=False)
+        testloader = utils.data.DataLoader(
+        testset, batch_size=len(testset.data), shuffle=False)
+        for _, train_data in enumerate(trainloader, 0):
+            trainset.data, trainset.targets = train_data
+        for _, test_data in enumerate(testloader, 0):
+            testset.data, testset.targets = test_data
+        
+
+        dataset_image = []
+        dataset_label = []
+
+        dataset_image.extend(trainset.data.cpu().detach().numpy())
+        dataset_image.extend(testset.data.cpu().detach().numpy())
+        dataset_label.extend(trainset.targets.cpu().detach().numpy())
+        dataset_label.extend(testset.targets.cpu().detach().numpy())
+        dataset_image = Array(dataset_image)
+        dataset_label = Array(dataset_label)
+
+        return dataset_image, dataset_label
+
+class FMNISTDataset(Dataset):
+    
+    def __init__(self, 
+                 num_clients: int, 
+                 rawdata_path: str = DEFAULT_RAW_DATA_PATH + 'fmnist',
+                 batch_size: int = DEFAULT_BATCH_SIZE, 
+                 class_per_client: int=DEFAULT_CLASS_PER_CLIENT, 
+                 alpha: float = DEFAULT_ALPHA_SIZE, 
+                 niid: bool=DEFAULT_NIID, 
+                 balance: bool=DEFAULT_BALANCE, 
+                 partition: str=DEFAULT_PARTITION, 
+                 train_size: float = DEFAULT_TRAIN_SIZE):
+        super().__init__("fminst",num_clients, 10, rawdata_path, batch_size, class_per_client, alpha, niid, balance, partition, train_size)
+
+
+
+
+    def get_rawdata(self) -> Tuple:
+        # Get FashionMNIST data
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize([0.5], [0.5])])
+
+        if not path.exists(self.rawdata_path):
+            makedirs(self.rawdata_path)
+        
+        trainset = datasets.FashionMNIST(root=self.rawdata_path, train=True, download=True, transform=transform)
+        testset = datasets.FashionMNIST(root=self.rawdata_path, train=False, download=True, transform=transform)
+        trainloader = utils.data.DataLoader(
+        trainset, batch_size=len(trainset.data), shuffle=False)
+        testloader = utils.data.DataLoader(
+        testset, batch_size=len(testset.data), shuffle=False)
+        for _, train_data in enumerate(trainloader, 0):
+            trainset.data, trainset.targets = train_data
+        for _, test_data in enumerate(testloader, 0):
+            testset.data, testset.targets = test_data
+        
+
+        dataset_image = []
+        dataset_label = []
+
+        dataset_image.extend(trainset.data.cpu().detach().numpy())
+        dataset_image.extend(testset.data.cpu().detach().numpy())
+        dataset_label.extend(trainset.targets.cpu().detach().numpy())
+        dataset_label.extend(testset.targets.cpu().detach().numpy())
+        dataset_image = Array(dataset_image)
+        dataset_label = Array(dataset_label)
+
+        return dataset_image, dataset_label
 
   
             

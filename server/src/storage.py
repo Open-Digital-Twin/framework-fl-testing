@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from os import path, makedirs
 from .dataset import Dataset
+import random
 import numpy as np
 from typing import Optional, Dict
 from flwr.common.logger import log
@@ -12,62 +13,74 @@ from logging import INFO
 
 import shutil
 
-    
+random.seed(1)
+np.random.seed(1)
 
 
 class StorageManager():
 
     __experiment_path: str
+    __experiment_base_path: str
     __experiment_name: str
     __use_cache: bool
     __experiment_config: dict
+    __hostname: str
    
 
 
-    def __init__(self, experiment_path:str, experiment_name: str, use_cache_always: bool = True):
-        self.__experiment_path = experiment_path
-        self.__experiment_name= experiment_name
-        self.experiment_config= {"dataset": {},
+    def __init__(self, experiment_base_path:str, experiment_name: str, hostname: str,use_cache_always: bool = True):
+        self.__experiment_base_path = path.join(experiment_base_path)
+        self.__experiment_path = path.join(experiment_base_path, experiment_name)
+        self.__experiment_name= path.join(experiment_name)
+        self.__hostname = hostname
+        self.__experiment_config= {"dataset": {},
                         "experiment": self.__experiment_name,
                         "current_run_number": 0
                         }
         self.__use_cache = use_cache_always
         
 
-    def __check_experiment_path(self, file_name:  Optional[str] = None):
-        if file_name:
-            return path.exists(self.__experiment_path + file_name)
-        else:
-            return path.exists(self.__experiment_path)
+    def __check_path(self, path_str: str):
+        return path.exists(path.join(path_str))
         
-   
     
 
     
-    def initialize_experiment_path(self: str):
-        log(INFO, f"Initializing experiment path: {self.__experiment_path + self.__experiment_name}")
-        if not self.__check_experiment_path():
+    def initialize_experiment_path(self):
+        
+        
+        if not self.__check_path(self.__experiment_path):
             makedirs(self.__experiment_path)
-        if not self.__check_experiment_path(self.__experiment_name):
-            makedirs(self.__experiment_path + f"{self.__experiment_name}/runs")
-        if not self.__check_experiment_path(f"{self.__experiment_name}/runs"):
-            makedirs(self.__experiment_path + f"{self.__experiment_name}/runs")
-        if not self.__check_experiment_path(f"{self.__experiment_name}/logs"):
-            makedirs(self.__experiment_path + f"{self.__experiment_name}/logs")
-        if not self.__check_experiment_path(f"{self.__experiment_name}/data"):
-            makedirs(self.__experiment_path + f"{self.__experiment_name}/data")
-        shutil.rmtree(self.__experiment_path + f"{self.__experiment_name}/data/train", ignore_errors=True)
-        makedirs(self.__experiment_path + f"{self.__experiment_name}/.temp")
+
+        if not self.__check_path(path.join(self.__experiment_path, "runs")):
+            makedirs(path.join(self.__experiment_path, "runs"))
+
+        if not self.__check_path(path.join(self.__experiment_path, "data")):
+            makedirs(path.join(self.__experiment_path, "data"))
+
+        shutil.rmtree(path.join(self.__experiment_path, ".temp"), ignore_errors=True)
+        makedirs(path.join(self.__experiment_path, ".temp"))
+        makedirs(path.join(self.__experiment_path, ".temp","logs"))
+        makedirs(path.join(self.__experiment_path, ".temp","results"))
+        file = path.join(self.__experiment_path,".temp","logs",f"{self.__hostname}.log")
+        print(file)
+        with open(file, mode='w+') as files:
+            pass
+        configure_logger("file", filename=file)
+       
+        log(INFO, f"Initializing experiment path: {self.__experiment_path}")
+
         
         
-            
+        
+
 
     def load_experiment_config(self):
-        
-        if self.__check_experiment_path(f"{self.__experiment_name}/config.json"):
-            with open(self.__experiment_path  + f"{self.__experiment_name}/config.json", 'r') as f:
-                self.experiment_config = ujson.load(f)
-                log(INFO, f"Found experiment config {self.__experiment_path + self.__experiment}")
+        experiment_config_path = path.join(self.__experiment_path, "config.json")
+        if self.__check_path(experiment_config_path):
+            with open(experiment_config_path, 'r') as f:
+                self.__experiment_config = ujson.load(f)
+                log(INFO, f"Found experiment config {experiment_config_path}")
             return True
         else:
             log(INFO, f"Missing experiment config file")
@@ -80,17 +93,20 @@ class StorageManager():
     
     def __check_current_dataset_config(self,  dataset: Dataset):
         # check existing dataset
-            if self.experiment_config['dataset'] == dataset.get_config():
+            if self.__experiment_config['dataset'] == dataset.get_config():
                 return True
             else:
                 return False
 
 
     def __separate_data(self, dataset: Dataset) -> bool:
+        # separate data using the dataset config
         X = [[] for _ in range(dataset.num_clients)]
         y = [[] for _ in range(dataset.num_clients)]
         statistic = [[] for _ in range(dataset.num_clients)]
 
+        # read data from disk
+        log(INFO, f"Reading data from disk")
         dataset_content, dataset_label = dataset.get_rawdata()
 
         dataidx_map = {}
@@ -98,6 +114,7 @@ class StorageManager():
     
 
         if dataset.partition == 'pat':
+            #Divide data by classes using the dataset config
             idxs = np.array(range(len(dataset_label)))
             idx_for_each_class = []
             for i in range(dataset.num_classes):
@@ -115,8 +132,10 @@ class StorageManager():
                 num_selected_clients = len(selected_clients)
                 num_per = num_all_samples / num_selected_clients
                 if dataset.balance:
+                    log(INFO, f"Balanced separation of the dataset")
                     num_samples = [int(num_per) for _ in range(num_selected_clients-1)]
                 else:
+                    log(INFO, f"Unbalanced separation of the dataset")
                     num_samples = np.random.randint(max(num_per/10, dataset.least_samples/dataset.num_classes), num_per, num_selected_clients-1).tolist()
                 num_samples.append(num_all_samples-sum(num_samples))
 
@@ -190,10 +209,10 @@ class StorageManager():
             test_data.append({'x': X_test, 'y': y_test})
             num_samples['test'].append(len(y_test))
 
-        print("Total number of samples:", sum(num_samples['train'] + num_samples['test']))
-        print("The number of train samples:", num_samples['train'])
-        print("The number of test samples:", num_samples['test'])
-        print()
+        log(INFO, f"Total number of samples: {sum(num_samples['train'] + num_samples['test'])}")
+        log(INFO,f"The number of train samples: {num_samples['train']}")
+        log(INFO,f"The number of test samples: {num_samples['test']}")
+
         del X, y
         # gc.collect()
 
@@ -201,22 +220,23 @@ class StorageManager():
 
 
     def update_experiment_config(self, key, value ):
-        self.experiment_config.update({key: value})
+        self.__experiment_config.update({key: value})
     
     def save_experiment_config(self):
-        log(INFO, f"Saving experiment config: {self.__experiment_path + self.__experiment_name}")
-        with open(self.__experiment_path + f"{self.__experiment_name}" + "/config.json", 'w') as f:
-            ujson.dump(self.experiment_config, f)
+        
+        log(INFO, f"Saving experiment config {self.__experiment_path}")
+        with open(path.join(self.__experiment_path, "config.json"), 'w') as f:
+            ujson.dump(self.__experiment_config, f)
         
 
     def __save_data_distribution(self, train_data, test_data):       
         # gc.collect()
         log(INFO, f"Saving data distribution")
         for idx, train_dict in enumerate(train_data):
-            with open(self.__experiment_path + f"{self.__experiment_name}/data/train/" + str(idx) + '.npz', 'wb') as f:
+            with open(path.join(self.__experiment_path, "data","train", str(idx)+'.npz'), 'wb') as f:
                 np.savez_compressed(f, data=train_dict)
         for idx, test_dict in enumerate(test_data):
-            with open(self.__experiment_path + f"{self.__experiment_name}/data/test/" + str(idx) + '.npz', 'wb') as f:
+            with open(path.join(self.__experiment_path, "data","test", str(idx)+'.npz'), 'wb') as f:
                 np.savez_compressed(f, data=test_dict)
         log(INFO, f"Data distribution saved")
 
@@ -233,18 +253,18 @@ class StorageManager():
         return False
     
     def __delete_distribution(self):
-        shutil.rmtree(self.__experiment_path + f"{self.__experiment_name}/data/train", ignore_errors=True)
-        shutil.rmtree(self.__experiment_path + f"{self.__experiment_name}/data/test", ignore_errors=True)
+        shutil.rmtree(path.join(self.__experiment_path, "data","train"), ignore_errors=True)
+        shutil.rmtree(path.join(self.__experiment_path, "data","test"), ignore_errors=True)
 
     def __distribute_dataset(self, dataset: Dataset):
         
         X, y, statistic = self.__separate_data(dataset)
         train_data, test_data = self.__split_data(X, y, dataset)
         self.__delete_distribution()
-        if not self.__check_experiment_path(f"{self.__experiment_name}/data/test"):
-            makedirs(self.__experiment_path + f"{self.__experiment_name}/data/test")
-        if not self.__check_experiment_path(f"{self.__experiment_name}/data/train"):
-            makedirs(self.__experiment_path + f"{self.__experiment_name}/data/train")
+        if not self.__check_path(path.join(self.__experiment_path, "data","train")):
+            makedirs(path.join(self.__experiment_path, "data","train"))
+        if not self.__check_path(path.join(self.__experiment_path, "data","test")):
+            makedirs(path.join(self.__experiment_path, "data","test"))
         self.__save_data_distribution(train_data, test_data)
         self.update_experiment_config('statistic', statistic)
         self.update_experiment_config('dataset', dataset.get_config())
@@ -253,7 +273,7 @@ class StorageManager():
         self.initialize_experiment_path()
         if self.load_experiment_config():
             if self.check_dataset(dataset):
-                return
+                pass
             else:
                 self.__distribute_dataset(dataset)
         else:
@@ -261,8 +281,10 @@ class StorageManager():
         self.update_experiment_config("current_run_number", self.__experiment_config['current_run_number'] + 1)
 
     def end_experiment(self):
-        shutil.move(f"{self.__experiment_path}{self.__experiment_name}/.temp", f"{self.__experiment_path}{self.__experiment_name}/runs/{self.__experiment_config['current_run_number']}")
+        log(INFO, f"Saving experiment {self.__experiment_path}")
+        shutil.move(path.join(self.__experiment_path, ".temp"),path.join(self.__experiment_path, "runs",str(self.__experiment_config['current_run_number'])))
         self.save_experiment_config()
+        shutil.copy(path.join(self.__experiment_path, "config.json"), path.join(self.__experiment_path,"runs",str(self.__experiment_config['current_run_number']), "config.json"))
 
         
         

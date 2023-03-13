@@ -59,3 +59,6 @@ certificates:
 
 shell-server:
 	poetry shell -C ${SERVER_DIR}
+
+shell-client:
+	poetry shell -C ${CLIENT_DIR}

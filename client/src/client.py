@@ -12,6 +12,16 @@ from typing import Dict, List, Tuple
 from flwr import client
 from flwr.common.logger import log
 from logging import DEBUG, INFO
+import numpy as np
+import seaborn as sns
+from sklearn.metrics import classification_report
+import pandas as pd
+import matplotlib.pyplot as plt
+from os import environ, makedirs, path
+
+
+
+
 
 
 
@@ -62,6 +72,35 @@ class CifarClient(client.NumPyClient):
     ) -> Tuple[float, int, Dict]:
         # Set model parameters, evaluate model on local test dataset, return result
         self.set_parameters(parameters)
-        #log(INFO, f'Starting server {config["server_name"]} evaluation round number {config["current_round"]} of {config["server_num_rounds"]}')
-        loss, accuracy = self.__model.test(self.__testloader)
+        log(INFO, f'Starting server {config["server_name"]} evaluation round number {config["current_round"]} of {config["server_num_rounds"]}')
+        predicteds, trues, loss, accuracy = self.__model.test(self.__testloader)
+        self.plot_classification_report(predicteds, trues, config)
         return float(loss), self.__num_examples["testset"], {"accuracy": float(accuracy)}
+    
+    def plot_classification_report(self, trues, predicteds, config: Dict[str, str] = None):
+        trues_list = []
+        predicteds_list = []
+        for tensor in trues:
+            trues_list.append(tensor.item())
+        for tensor in predicteds:
+            predicteds_list.append(tensor.item())
+
+
+        y_true = np.array(trues_list)
+        y_pred = np.array(predicteds_list)
+        labels = np.arange(np.max(trues_list))
+        target_names = labels.tolist()
+        for i in range(len(target_names)):
+            target_names[i] = str(target_names[i])
+      
+
+        clf_report = classification_report(y_true,
+                                        y_pred,
+                                        labels=labels,
+                                        target_names=target_names,
+                                        output_dict=True)
+        sns.heatmap(pd.DataFrame(clf_report).iloc[:-1, :].T, annot=True)
+        dir_path = path.join(
+                             environ.get("ENVIRONMENT_RESULTS_PATH"), 
+                             str(config["current_round"]) + ".png")
+        plt.savefig(dir_path)
