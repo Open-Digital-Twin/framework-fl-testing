@@ -74,3 +74,8 @@ if __name__ == "__main__":
     partition = sys.argv[3] if sys.argv[3] != "-" else None
 
     generate_cifar10(dir_path, num_clients, num_classes, niid, balance, partition)
+
+
+
+    num_clients = 10
+num_classes = 10

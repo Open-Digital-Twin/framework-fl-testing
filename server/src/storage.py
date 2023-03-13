@@ -132,10 +132,10 @@ class StorageManager():
                 num_selected_clients = len(selected_clients)
                 num_per = num_all_samples / num_selected_clients
                 if dataset.balance:
-                    log(INFO, f"Balanced separation of the dataset")
+                    
                     num_samples = [int(num_per) for _ in range(num_selected_clients-1)]
                 else:
-                    log(INFO, f"Unbalanced separation of the dataset")
+                    
                     num_samples = np.random.randint(max(num_per/10, dataset.least_samples/dataset.num_classes), num_per, num_selected_clients-1).tolist()
                 num_samples.append(num_all_samples-sum(num_samples))
 

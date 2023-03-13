@@ -86,8 +86,8 @@ class CifarClient(client.NumPyClient):
             predicteds_list.append(tensor.item())
 
 
-        y_true = np.array(trues_list)
-        y_pred = np.array(predicteds_list)
+        y_true = np.array(trues_list).astype(int)
+        y_pred = np.array(predicteds_list).astype(int)
         labels = np.arange(np.max(trues_list))
         target_names = labels.tolist()
         for i in range(len(target_names)):

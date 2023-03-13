@@ -145,7 +145,7 @@ class Cifar100Dataset(Dataset):
                  balance: bool=DEFAULT_BALANCE, 
                  partition: str=DEFAULT_PARTITION, 
                  train_size: float = DEFAULT_TRAIN_SIZE):
-        super().__init__("cifar-100",num_clients, 10, rawdata_path, batch_size, class_per_client, alpha, niid, balance, partition, train_size)
+        super().__init__("cifar-100",num_clients, 20, rawdata_path, batch_size, class_per_client, alpha, niid, balance, partition, train_size)
 
 
 
