@@ -23,11 +23,33 @@ spec:
       containers:
         - name: flserver
           image: 'fschwanck/fl-framework-server:latest'
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: flserver
               containerPort: 8080
           env:
+
+       
+            - name: SERVER_STRATEGY
+              value: flwr-fedopt
+            - name: DATASET_NAME
+              value: cifar-10
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: DATASET_NIID
+              value: '1'
+            - name: DATASET_PARTITION
+              value: dir
+            - name: DATASET_BALANCE
+              value: '0'
+            - name: DATASET_BALANCE
+              value: '0'
+            - name: DATASET_BATCHES
+              value: '10'
+            - name: MODEL
+              value: cnn
             - name: SERVER_NUM_ROUNDS
               value: '10'
             - name: CERTIFICATES_PATH
@@ -37,9 +59,9 @@ spec:
             - name: FRACTION_FIT
               value: '1'
             - name: MIN_FIT_CLIENTS
-              value: '3'
-            - name: MIN_AVAILABLE_CLIENTS
               value: '5'
+            - name: MIN_AVAILABLE_CLIENTS
+              value: '10'
             - name: CLIENT_LOCAL_EPOCHS
               value: '10'
             - name: FLWR_TELEMETRY_ENABLED
@@ -47,11 +69,16 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
           volumeMounts:
-            - name: fl-dataset
+            - name: fl-data
               mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
       volumes:
-        - name: fl-dataset
+        - name: fl-data
           persistentVolumeClaim:
             claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
       nodeSelector:
         kubernetes.io/hostname: brix-porvir-01

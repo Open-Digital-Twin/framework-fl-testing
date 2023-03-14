@@ -6,7 +6,7 @@ from os import path, makedirs
 from typing import Tuple, Dict
 
 
-DEFAULT_BATCH_SIZE = 10
+DEFAULT_BATCH_SIZE = 16
 DEFAULT_TRAIN_SIZE = 0.75
 DEFAULT_ALPHA_SIZE = 0.1
 DEFAULT_CLASS_PER_CLIENT = 2
@@ -139,13 +139,13 @@ class Cifar100Dataset(Dataset):
                  num_clients: int, 
                  rawdata_path: str = DEFAULT_RAW_DATA_PATH + 'cifar-100',
                  batch_size: int = DEFAULT_BATCH_SIZE, 
-                 class_per_client: int=DEFAULT_CLASS_PER_CLIENT, 
+                 class_per_client: int=DEFAULT_CLASS_PER_CLIENT * 10, 
                  alpha: float = DEFAULT_ALPHA_SIZE, 
                  niid: bool=DEFAULT_NIID, 
                  balance: bool=DEFAULT_BALANCE, 
                  partition: str=DEFAULT_PARTITION, 
                  train_size: float = DEFAULT_TRAIN_SIZE):
-        super().__init__("cifar-100",num_clients, 20, rawdata_path, batch_size, class_per_client, alpha, niid, balance, partition, train_size)
+        super().__init__("cifar-100",num_clients, 100, rawdata_path, batch_size, class_per_client, alpha, niid, balance, partition, train_size)
 
 
 

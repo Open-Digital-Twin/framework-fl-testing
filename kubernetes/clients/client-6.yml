@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fl-framework-client-2
+  name: fl-framework-client-6
   namespace: fschwanck
   labels:
     app.kubernetes.io/component: fl-framework
-    app.kubernetes.io/name: fl-framework-client-2
+    app.kubernetes.io/name: fl-framework-client-6
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: fl-framework
-      app.kubernetes.io/name: fl-framework-client-2
+      app.kubernetes.io/name: fl-framework-client-6
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -18,7 +18,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/component: fl-framework
-        app.kubernetes.io/name: fl-framework-client-2
+        app.kubernetes.io/name: fl-framework-client-6
     spec:
       volumes:
         - name: fl-data
@@ -28,7 +28,7 @@ spec:
           persistentVolumeClaim:
             claimName: fl-framework-storageclaim-experiments
       containers:
-        - name: fl-framework-client-2
+        - name: fl-framework-client-6
           imagePullPolicy: Always
           image: 'fschwanck/fl-framework-client:latest'
           env:
@@ -55,11 +55,11 @@ spec:
             - name: DATA_PATH
               value: ./data/cifar-10
             - name: CLIENT_ID
-              value: '2'
+              value: '6'
           volumeMounts:
             - name: fl-data
               mountPath: /data
             - name: fl-experiments
               mountPath: /experiments
       nodeSelector:
-        kubernetes.io/hostname: mac-porvir-02
+        kubernetes.io/hostname: brix-porvir-02
