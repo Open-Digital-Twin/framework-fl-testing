@@ -187,6 +187,18 @@ def main() -> None:
            Path(f"{CERTIFICATES_PATH}/server.key").read_bytes()
       ),
        strategy=strategy)
+    storage.update_experiment_config('config', {
+        'server_strategy': SERVER_STRATEGY,
+        'model': MODEL,
+        'local_epochs': CLIENT_LOCAL_EPOCHS,
+        'server_rounds': SERVER_NUM_ROUNDS,
+        'fraction_fit': FRACTION_FIT,
+        'min_fit_clients': MIN_FIT_CLIENTS,
+        'min_avaiable_clients': MIN_AVAILABLE_CLIENTS
+
+        }
+        )
+    
     storage.end_experiment()
 
 if __name__ == "__main__":

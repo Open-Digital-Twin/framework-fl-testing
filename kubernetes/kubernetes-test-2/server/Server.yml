@@ -35,7 +35,7 @@ spec:
             - name: DATASET_NAME
               value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test
+              value: kubernetes-test-2
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: DATASET_NIID

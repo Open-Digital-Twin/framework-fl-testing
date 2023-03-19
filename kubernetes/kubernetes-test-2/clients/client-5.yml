@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fl-framework-client-2
+  name: fl-framework-client-5
   namespace: fschwanck
   labels:
     app.kubernetes.io/component: fl-framework
-    app.kubernetes.io/name: fl-framework-client-2
+    app.kubernetes.io/name: fl-framework-client-5
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: fl-framework
-      app.kubernetes.io/name: fl-framework-client-2
+      app.kubernetes.io/name: fl-framework-client-5
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -18,7 +18,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/component: fl-framework
-        app.kubernetes.io/name: fl-framework-client-2
+        app.kubernetes.io/name: fl-framework-client-5
     spec:
       volumes:
         - name: fl-data
@@ -28,7 +28,7 @@ spec:
           persistentVolumeClaim:
             claimName: fl-framework-storageclaim-experiments
       containers:
-        - name: fl-framework-client-2
+        - name: fl-framework-client-5
           imagePullPolicy: Always
           image: 'fschwanck/fl-framework-client:latest'
           env:
@@ -41,7 +41,7 @@ spec:
             - name: DATASET_NAME
               value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test
+              value: kubernetes-test-2
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
@@ -52,14 +52,13 @@ spec:
               value: ./.cache/certificates
             - name: SERVER_ADDRESS
               value: fl-framework-server:8080
-            - name: DATA_PATH
-              value: ./data/cifar-10
+
             - name: CLIENT_ID
-              value: '2'
+              value: '5'
           volumeMounts:
             - name: fl-data
               mountPath: /data
             - name: fl-experiments
               mountPath: /experiments
       nodeSelector:
-        kubernetes.io/hostname: mac-porvir-02
+        kubernetes.io/hostname: mac-porvir-05

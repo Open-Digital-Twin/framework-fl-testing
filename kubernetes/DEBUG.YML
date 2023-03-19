@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debugger
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: debugger
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: debugger
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: debugger
+    spec:
+      restartPolicy: Always
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: debugger
+          imagePullPolicy: IfNotPresent
+          image: ubuntu
+          command:
+          - "sleep"
+          - "604800"
+    
+   
+
+  
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+     

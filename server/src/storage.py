@@ -279,6 +279,7 @@ class StorageManager():
         else:
             self.__distribute_dataset(dataset)
         self.update_experiment_config("current_run_number", self.__experiment_config['current_run_number'] + 1)
+        
 
     def end_experiment(self):
         log(INFO, f"Saving experiment {self.__experiment_path}")

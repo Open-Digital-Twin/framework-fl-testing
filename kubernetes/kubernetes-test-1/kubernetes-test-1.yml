@@ -1,0 +1,841 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-server
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-server
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-server
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-server
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: flserver
+          image: 'fschwanck/fl-framework-server:latest'
+          imagePullPolicy: Always
+          ports:
+            - name: flserver
+              containerPort: 8080
+          env:
+            - name: SERVER_STRATEGY
+              value: flwr-fedopt
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: DATASET_NIID
+              value: '1'
+            - name: DATASET_PARTITION
+              value: dir
+            - name: DATASET_BALANCE
+              value: '0'
+            - name: DATASET_BATCHES
+              value: '10'
+            - name: MODEL
+              value: dnn
+            - name: SERVER_NUM_ROUNDS
+              value: '10'
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: 0.0.0.0:8080
+            - name: FRACTION_FIT
+              value: '1'
+            - name: MIN_FIT_CLIENTS
+              value: '5'
+            - name: MIN_AVAILABLE_CLIENTS
+              value: '10'
+            - name: CLIENT_LOCAL_EPOCHS
+              value: '10'
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      nodeSelector:
+        nodetype: computer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-1
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-1
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-1
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-1
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '1'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-2
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-2
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-2
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-2
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-2
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '2'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-3
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-3
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-3
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-3
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '3'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-4
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-4
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-4
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-4
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-4
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '4'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-5
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-5
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-5
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-5
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-5
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '5'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-6
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-6
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-6
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-6
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-6
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '6'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-7
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-7
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-7
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-7
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-7
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '7'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-8
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-8
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-8
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-8
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-8
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '8'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-9
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-9
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-9
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-9
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-9
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '9'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-10
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-10
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-10
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-10
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                - fl-framework
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-10
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-1
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '0'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        nodetype: computer
+     
+
+
+
+
+
+
+

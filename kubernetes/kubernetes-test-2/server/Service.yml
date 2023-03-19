@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fl-framework-server
+  namespace: fschwanck
+spec:
+  selector:
+    app.kubernetes.io/name: fl-framework-server
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: flserver

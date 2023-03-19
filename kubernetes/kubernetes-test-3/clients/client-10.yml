@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fl-framework-client-4
+  name: fl-framework-client-10
   namespace: fschwanck
   labels:
     app.kubernetes.io/component: fl-framework
-    app.kubernetes.io/name: fl-framework-client-4
+    app.kubernetes.io/name: fl-framework-client-10
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: fl-framework
-      app.kubernetes.io/name: fl-framework-client-4
+      app.kubernetes.io/name: fl-framework-client-10
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -18,7 +18,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/component: fl-framework
-        app.kubernetes.io/name: fl-framework-client-4
+        app.kubernetes.io/name: fl-framework-client-10
     spec:
       volumes:
         - name: fl-data
@@ -28,7 +28,7 @@ spec:
           persistentVolumeClaim:
             claimName: fl-framework-storageclaim-experiments
       containers:
-        - name: fl-framework-client-4
+        - name: fl-framework-client-10
           imagePullPolicy: Always
           image: 'fschwanck/fl-framework-client:latest'
           env:
@@ -39,27 +39,25 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: cifar-10
+              value: fmnist
             - name: EXPERIMENT_NAME
-              value: kubernetes-test
+              value: kubernetes-test-3
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: dnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
               value: ./.cache/certificates
             - name: SERVER_ADDRESS
               value: fl-framework-server:8080
-            - name: DATA_PATH
-              value: ./data/cifar-10
+
             - name: CLIENT_ID
-              value: '4'
+              value: '0'
           volumeMounts:
             - name: fl-data
               mountPath: /data
             - name: fl-experiments
               mountPath: /experiments
-      nodeSelector:
-        kubernetes.io/hostname: mac-porvir-04
+     

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-server
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-server
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-server
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-server
+    spec:
+      containers:
+        - name: flserver
+          image: 'fschwanck/fl-framework-server:latest'
+          imagePullPolicy: Always
+          ports:
+            - name: flserver
+              containerPort: 8080
+          env:
+
+       
+            - name: SERVER_STRATEGY
+              value: flwr-fedavg
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-3
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: DATASET_NIID
+              value: '1'
+            - name: DATASET_PARTITION
+              value: pat
+            - name: DATASET_BALANCE
+              value: '0'
+            - name: DATASET_BATCHES
+              value: '10'
+            - name: MODEL
+              value: dnn
+            - name: SERVER_NUM_ROUNDS
+              value: '10'
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: 0.0.0.0:8080
+            - name: FRACTION_FIT
+              value: '1'
+            - name: MIN_FIT_CLIENTS
+              value: '5'
+            - name: MIN_AVAILABLE_CLIENTS
+              value: '10'
+            - name: CLIENT_LOCAL_EPOCHS
+              value: '10'
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      nodeSelector:
+        kubernetes.io/hostname: brix-porvir-01
