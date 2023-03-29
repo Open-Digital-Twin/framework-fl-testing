@@ -31,17 +31,17 @@ spec:
 
        
             - name: SERVER_STRATEGY
-              value: flwr-fedopt
+              value: flwr-fedavg
             - name: DATASET_NAME
               value: fmnist
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-3
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: DATASET_NIID
               value: '1'
             - name: DATASET_PARTITION
-              value: dir
+              value: pat
             - name: DATASET_BALANCE
               value: '0'
             - name: DATASET_BATCHES

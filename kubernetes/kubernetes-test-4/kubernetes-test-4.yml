@@ -39,23 +39,23 @@ spec:
               containerPort: 8080
           env:
             - name: SERVER_STRATEGY
-              value: flwr-fedopt
+              value: flwr-fedavgm
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: DATASET_NIID
               value: '1'
             - name: DATASET_PARTITION
-              value: dir
+              value: pat
             - name: DATASET_BALANCE
-              value: '0'
+              value: '1'
             - name: DATASET_BATCHES
               value: '10'
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: SERVER_NUM_ROUNDS
               value: '10'
             - name: CERTIFICATES_PATH
@@ -65,7 +65,7 @@ spec:
             - name: FRACTION_FIT
               value: '1'
             - name: MIN_FIT_CLIENTS
-              value: '10'
+              value: '5'
             - name: MIN_AVAILABLE_CLIENTS
               value: '10'
             - name: CLIENT_LOCAL_EPOCHS
@@ -140,13 +140,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -214,13 +214,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -288,13 +288,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -362,13 +362,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -436,13 +436,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -510,13 +510,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -584,13 +584,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -658,13 +658,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -733,13 +733,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -809,13 +809,13 @@ spec:
             - name: SERVER_NAME
               value: fl-framework-server
             - name: DATASET_NAME
-              value: fmnist
+              value: cifar-10
             - name: EXPERIMENT_NAME
-              value: kubernetes-test-1
+              value: kubernetes-test-4
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: dnn
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH

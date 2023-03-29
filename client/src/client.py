@@ -14,7 +14,7 @@ from flwr.common.logger import log
 from logging import DEBUG, INFO
 import numpy as np
 import seaborn as sns
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, f1_score
 import pandas as pd
 import matplotlib.pyplot as plt
 from os import environ, makedirs, path
@@ -167,7 +167,11 @@ class CifarClient(client.NumPyClient):
                                         output_dict=True,
                                         zero_division=0)
         sns.heatmap(pd.DataFrame(clf_report).iloc[:-1, :].T, annot=True)
+        macro = f1_score(y_true, y_pred,labels=target_names, pos_label=1, average='macro', zero_division=0)
+        micro = f1_score(y_true, y_pred,labels=target_names, pos_label=1, average='micro', zero_division=0)
+        weighted = f1_score(y_true, y_pred,labels=target_names, pos_label=1, average='weighted', zero_division=0)
 
+        log(INFO, f"f1_score: weighted={weighted}, micro={micro}, macro={macro}")
         
         dir_path = path.join(
                              environ.get("EXPERIMENT_RESULTS_PATH")

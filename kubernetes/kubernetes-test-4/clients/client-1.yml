@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-framework-client-1
+  namespace: fschwanck
+  labels:
+    app.kubernetes.io/component: fl-framework
+    app.kubernetes.io/name: fl-framework-client-1
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: fl-framework
+      app.kubernetes.io/name: fl-framework-client-1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: fl-framework
+        app.kubernetes.io/name: fl-framework-client-1
+    spec:
+      volumes:
+        - name: fl-data
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim
+        - name: fl-experiments
+          persistentVolumeClaim:
+            claimName: fl-framework-storageclaim-experiments
+      containers:
+        - name: fl-framework-client-1
+          imagePullPolicy: Always
+          image: 'fschwanck/fl-framework-client:latest'
+          env:
+   
+
+            - name: FLWR_TELEMETRY_ENABLED
+              value: '0'
+            - name: SERVER_NAME
+              value: fl-framework-server
+            - name: DATASET_NAME
+              value: fmnist
+            - name: EXPERIMENT_NAME
+              value: kubernetes-test-3
+            - name: EXPERIMENT_PATH
+              value: ./experiments
+            - name: MODEL
+              value: dnn
+            - name: FL_CLIENT_DEVICE
+              value: cpu
+            - name: CERTIFICATES_PATH
+              value: ./.cache/certificates
+            - name: SERVER_ADDRESS
+              value: fl-framework-server:8080
+            - name: CLIENT_ID
+              value: '1'
+          volumeMounts:
+            - name: fl-data
+              mountPath: /data
+            - name: fl-experiments
+              mountPath: /experiments
+      nodeSelector:
+        kubernetes.io/hostname: mac-porvir-01

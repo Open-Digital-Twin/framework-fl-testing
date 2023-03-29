@@ -55,9 +55,9 @@ spec:
             - name: DATASET_BATCHES
               value: '10'
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: SERVER_NUM_ROUNDS
-              value: '20'
+              value: '10'
             - name: CERTIFICATES_PATH
               value: ./.cache/certificates
             - name: SERVER_ADDRESS
@@ -65,11 +65,11 @@ spec:
             - name: FRACTION_FIT
               value: '1'
             - name: MIN_FIT_CLIENTS
-              value: '5'
+              value: '1'
             - name: MIN_AVAILABLE_CLIENTS
               value: '10'
             - name: CLIENT_LOCAL_EPOCHS
-              value: '20'
+              value: '15'
             - name: FLWR_TELEMETRY_ENABLED
               value: '0'
             - name: SERVER_NAME
@@ -146,7 +146,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -220,7 +220,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -294,7 +294,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -368,7 +368,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -442,7 +442,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -516,7 +516,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -590,7 +590,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -664,7 +664,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -739,7 +739,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -815,7 +815,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: googlenet
+              value: cnn
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH

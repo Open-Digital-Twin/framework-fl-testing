@@ -154,6 +154,16 @@ def main() -> None:
         on_evaluate_config_fn=evaluate_config,
         evaluate_metrics_aggregation_fn=weighted_average
         )
+    elif SERVER_STRATEGY == "flwr-fedyogi":
+        strategy = flwr_strategies.FedYogi(
+        initial_parameters=ndarrays_to_parameters(get_parameters(model)),
+        fraction_fit=FRACTION_FIT,  # Sample % of available clients for the next round (0.1 = 10%)
+        min_fit_clients=MIN_FIT_CLIENTS,  # Minimum number of clients to be sampled for the next round
+        min_available_clients=MIN_AVAILABLE_CLIENTS,  # Minimum number of clients that need to be connected to the server before a training round can start
+        on_fit_config_fn=fit_config, # The fit_config function we defined earlier
+        on_evaluate_config_fn=evaluate_config,
+        evaluate_metrics_aggregation_fn=weighted_average
+        )
     elif SERVER_STRATEGY == "custom-aggregate":
          strategy = custom_strategies.AggregateCustomMetricStrategy(
         fraction_fit=FRACTION_FIT,  # Sample % of available clients for the next round (0.1 = 10%)

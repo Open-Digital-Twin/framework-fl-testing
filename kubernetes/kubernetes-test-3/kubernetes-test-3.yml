@@ -39,7 +39,7 @@ spec:
               containerPort: 8080
           env:
             - name: SERVER_STRATEGY
-              value: flwr-fedavgm
+              value: flwr-fedyogi
             - name: DATASET_NAME
               value: cifar-100
             - name: EXPERIMENT_NAME
@@ -55,9 +55,9 @@ spec:
             - name: DATASET_BATCHES
               value: '10'
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: SERVER_NUM_ROUNDS
-              value: '10'
+              value: '15'
             - name: CERTIFICATES_PATH
               value: ./.cache/certificates
             - name: SERVER_ADDRESS
@@ -65,7 +65,7 @@ spec:
             - name: FRACTION_FIT
               value: '1'
             - name: MIN_FIT_CLIENTS
-              value: '5'
+              value: '10'
             - name: MIN_AVAILABLE_CLIENTS
               value: '10'
             - name: CLIENT_LOCAL_EPOCHS
@@ -146,7 +146,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -220,7 +220,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -294,7 +294,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -368,7 +368,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -442,7 +442,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -516,7 +516,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -590,7 +590,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -664,7 +664,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -739,7 +739,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
@@ -815,7 +815,7 @@ spec:
             - name: EXPERIMENT_PATH
               value: ./experiments
             - name: MODEL
-              value: cnn
+              value: resnet
             - name: FL_CLIENT_DEVICE
               value: cpu
             - name: CERTIFICATES_PATH
