@@ -7,9 +7,9 @@ LOCAL_CONFIG_DIR=./config/local
 BUILD_DIR=./.cache/build
 SERVER_DIR=./server
 CLIENT_DIR=./client
-DOCKER_USER=fschwanck
-KUBERNETES_SERVER=blacksabbath.inf.ufrgs.br
-SSH_USER=fmschwanck
+DOCKER_USER=
+KUBERNETES_SERVER=
+SSH_USER=
 
 
 .PHONY: install-poetry
