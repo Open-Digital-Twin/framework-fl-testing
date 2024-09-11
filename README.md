@@ -30,15 +30,71 @@ contributions of each client at each round. Testing and assessing this FL algori
 ```
 ## Instalation
 
+The project was created using [Poetry](https://python-poetry.org/). To locally install dependencies for either the server and client:
+
+```
+make install-dependencies
+```
 
 ## Usage
 
-Instructions for using the project should go here.
+To use the framework locally, you can use [Docker Compose](https://docs.docker.com/compose/).
 
-## Contributing
+```
+docker-compose up
+```
 
-Instructions for contributing to the project should go here.
+This will spin up locally, using Docker, the clients and servers defined in the [docker-compose.yaml](docker-composer.yaml) file.
 
-## License
 
-Information about the license of the project should go here.
+## Configuration
+
+Client and server configuration are done through the `.env` files, which will define the environment variables needed for the experiment. 
+
+### common.env
+
+Has all common configuration done in both client and server:
+
+- CERTIFICATES_PATH `str`
+    - Path for SSL certficates (don't change)
+- EXPERIMENT_PATH `str`
+    - Experiment output path
+- SERVER_ADDRESS `str`
+    - Server internal IP address (don't change)
+- EXPERIMENT_NAME `str`
+    - Name for the experiment you will run
+- CLIENT_LOCAL_EPOCHS `int`
+    - Number of client local training epochs
+- SERVER_NAME=fl-framework-server
+    - Name for the server container
+- DATASET_NAME `str`
+    - Dataset to be used. Options include `cifar-10`, `cifar-100` and `fmnist`
+- DATASET_NIID `int`
+    - If the dataset distribution shoud be Non-IID or not. Should be `1` or `0`
+- DATASET_PARTITION `str`
+    - How is the classes distribution in the clients
+- DATASET_BALANCE `int`
+    - If the number of samples is unbalanced or balanced 
+- DATASET_BATCHES `int`
+    - Number of batches to divide the dataset
+- MODEL `str`
+    - Which model will be used for the experiment. 
+- DATASET_CLASS_PER_CLIENT `int`
+    - Number of classes per client.
+
+### server.env
+
+Has all configuration for the server.
+
+- SERVER_NUM_ROUNDS `int`
+    - Number of server rounds
+- SERVER_STRATEGY `str`
+    - Which global model aggregation strategy to be used
+- FRACTION_FIT `int`
+    - Percentage of fit clients to fit
+- MIN_FIT_CLIENTS `int`
+    - Mininum number of clients to fit
+- MIN_AVAILABLE_CLIENTS `int`
+    - Mininum number of clients needed to start training
+
+
