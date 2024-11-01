@@ -1,0 +1,20 @@
+FROM python:3.12 as base
+
+WORKDIR /
+
+RUN apt update -y && apt upgrade -y
+RUN pip install --upgrade pip && pip install pipenv
+
+
+ADD ./Pipfile /
+ADD ./Pipfile.lock /
+
+FROM base as runtime
+
+RUN pipenv install --deploy --system
+ADD ./src/client /client
+ADD ./.cache/certificates .cache/certificates
+
+
+
+CMD [ "python","-u","-m","client.main" ]
