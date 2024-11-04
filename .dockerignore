@@ -1,0 +1,8 @@
+tests
+kubernetes
+images
+graphs
+README.md
+Makefile
+*__pycache__*
+.venv
