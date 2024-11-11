@@ -15,7 +15,6 @@ from logging import INFO, ERROR
 from time import sleep
 
 
-
 CLIENT_ID = int(environ.get("CLIENT_ID"))
 EXPERIMENT_NAME = environ.get("EXPERIMENT_NAME")
 EXPERIMENT_PATH = environ.get("EXPERIMENT_PATH") 
@@ -88,13 +87,13 @@ def main() -> None:
     
     
     log(INFO, f"Starting FL client")
-
+    
     while(RETRIES > 0):
         try:
-            client.start_numpy_client(
+            client.start_client(
                 server_address=SERVER_ADDRESS,
                 root_certificates=Path(f"{CERTIFICATES_PATH}/ca.crt").read_bytes(),
-                client=CifarClient(trainloader, testloader, num_examples, model=model, device=DEVICE)
+                client=CifarClient(trainloader, testloader, num_examples, model=model, device=DEVICE).to_client()
                 )
             break
         except Exception as e:

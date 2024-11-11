@@ -1,6 +1,3 @@
-
-
-
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
@@ -18,12 +15,6 @@ from sklearn.metrics import classification_report, f1_score
 import pandas as pd
 import matplotlib.pyplot as plt
 from os import environ, makedirs, path
-
-
-
-
-
-
 
 class CifarClient(client.NumPyClient):
     __trainloader: DataLoader

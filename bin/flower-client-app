@@ -1,0 +1,8 @@
+#!/home/elpeixoto/github/framework-fl-testing/bin/python
+# -*- coding: utf-8 -*-
+import re
+import sys
+from flwr.client.supernode import run_client_app
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(run_client_app())

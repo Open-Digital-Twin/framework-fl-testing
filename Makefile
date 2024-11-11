@@ -29,7 +29,7 @@ certificates:
 	sh ${SCRIPTS_DIR}/certificates/generate.sh
 
 install-pipenv:
-	pip install --user pipenv || sudo pacman -S python-pipenv
+	pip install pipenv || sudo pacman -S python-pipenv
 
 install: install-pipenv
 	mkdir .venv || true

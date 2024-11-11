@@ -1,15 +1,14 @@
-FROM python:3.12 as base
+FROM python:3.12 AS base
 
 WORKDIR /
 
 RUN apt update -y && apt upgrade -y
 RUN pip install --upgrade pip && pip install pipenv
 
-
 ADD ./Pipfile /
 ADD ./Pipfile.lock /
 
-FROM base as runtime
+FROM base AS runtime
 
 RUN pipenv install --deploy --system
 ADD ./src/client /client
