@@ -15,7 +15,7 @@ from logging import INFO, ERROR
 from time import sleep
 
 
-CLIENT_ID = int(environ.get("CLIENT_ID"))
+CLIENT_ID = str(environ.get("CLIENT_ID"))
 EXPERIMENT_NAME = environ.get("EXPERIMENT_NAME")
 EXPERIMENT_PATH = environ.get("EXPERIMENT_PATH") 
 MODEL = environ.get("MODEL")
