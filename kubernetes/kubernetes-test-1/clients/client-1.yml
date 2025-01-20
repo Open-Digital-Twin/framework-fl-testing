@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fl-framework-client-1
-  namespace: fschwanck
+  namespace: elpeixoto
   labels:
     app.kubernetes.io/component: fl-framework
     app.kubernetes.io/name: fl-framework-client-1
@@ -30,7 +30,7 @@ spec:
       containers:
         - name: fl-framework-client-1
           imagePullPolicy: Always
-          image: 'fschwanck/fl-framework-client:latest'
+          image: 'enzolisp1/fl-framework-client:latest'
           env:
    
 
@@ -62,4 +62,5 @@ spec:
             - name: fl-experiments
               mountPath: /experiments
       nodeSelector:
-        kubernetes.io/type: mac-porvir-01
+        nodetype: server
+        #kubernetes.io/type: mac-porvir-01

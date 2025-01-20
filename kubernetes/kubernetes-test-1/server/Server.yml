@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fl-framework-server
-  namespace: fschwanck
+  namespace: elpeixoto
   labels:
     app.kubernetes.io/component: fl-framework
     app.kubernetes.io/name: fl-framework-server
@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: flserver
-          image: 'fschwanck/fl-framework-server:latest'
+          image: 'enzolisp1/fl-framework-server:latest'
           imagePullPolicy: Always
           ports:
             - name: flserver
@@ -79,4 +79,5 @@ spec:
           persistentVolumeClaim:
             claimName: fl-framework-storageclaim-experiments
       nodeSelector:
-        kubernetes.io/hostname: brix-porvir-01
+        nodetype: server
+        #kubernetes.io/hostname: brix-porvir-01

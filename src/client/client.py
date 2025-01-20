@@ -17,17 +17,17 @@ import matplotlib.pyplot as plt
 from os import environ, makedirs, path
 
 class CifarClient(client.NumPyClient):
-    __trainloader: DataLoader
-    __testloader: DataLoader
-    __model: nn.Module
-    __num_examples: Dict[str, int]
+    #__trainloader: DataLoader
+    #__testloader: DataLoader
+    #__model: nn.Module
+    #__num_examples: Dict[str, int]
   
 
     def __init__(
         self,
         trainloader: DataLoader,
         testloader: DataLoader,
-        num_examples: Dict,
+        num_examples: Dict[str, int],
         model: nn.Module,
         device: torch.device
     ) -> None:
