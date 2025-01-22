@@ -1,13 +1,12 @@
 services:
 
   fl-framework-server:
-    image: 'fschwanck/fl-framework-server:latest'
+    image: 'enzolisp1/fl-framework-server:latest'
     env_file:
       - ./common.env
       - ./server.env
     networks:
       - mynet
-      
     deploy:
       replicas: 1
       placement:
@@ -18,24 +17,16 @@ services:
     - ./experiments:/experiments
 
 
-
-
-
-
   fl-framework-client-0:
-    image: 'fschwanck/fl-framework-client:latest'
+    image: 'enzolisp1/fl-framework-client:latest'
     env_file:
       - ./common.env
       - ./client.env
     environment:
       - CLIENT_ID=0
       - FLWR_TELEMETRY_ENABLED=0
-
-
-      
     networks:
       - mynet
-
     deploy:
       replicas: 1
       placement:
@@ -47,17 +38,15 @@ services:
       
 
   fl-framework-client-1:
-    image: 'fschwanck/fl-framework-client:latest'
+    image: 'enzolisp1/fl-framework-client:latest'
     env_file:
       - ./common.env
       - ./client.env
     environment:
       - CLIENT_ID=1
       - FLWR_TELEMETRY_ENABLED=0
-      
     networks:
       - mynet
-
     deploy:
       replicas: 1
       placement:
@@ -71,12 +60,12 @@ services:
  
 networks:
   mynet:
-    driver: overlay
-    attachable: true
-    ipam:
-      config:
-        - subnet: 10.5.0.0/16
-          aux_addresses:
-            server: 10.5.0.2
+    driver: bridge
+    #attachable: true
+    #ipam:
+    #  config:
+    #    - subnet: 10.5.0.0/16
+    #      aux_addresses:
+    #        server: 10.5.0.2
          
             

@@ -132,12 +132,12 @@ spec:
       containers:
         - name: fl-framework-client
           imagePullPolicy: Always
-          image: 'enzolisp1/fl-framework-client:latest'
+          image: 'enzolisp1/fl-framework-client:v1.0'
           env:
-            #- name: CLIENT_ID
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: metadata.name            
+            - name: CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name            
             - name: FLWR_TELEMETRY_ENABLED
               value: '0'
             - name: SERVER_NAME
@@ -156,8 +156,8 @@ spec:
               value: ./.cache/certificates
             - name: SERVER_ADDRESS
               value: fl-framework-server:8080
-            - name: CLIENT_ID
-              value: '1'
+            #- name: CLIENT_ID
+            #  value: '1'
           volumeMounts:
             - name: fl-data
               mountPath: /data
